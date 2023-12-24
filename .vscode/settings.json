@@ -1,0 +1,35 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+
+  // Formatting
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // File Associations
+  "files.associations": {
+    ".env": "env",
+    ".env.*": "env",
+    "*.css": "tailwindcss"
+  },
+
+  // Code Spell Checker
+  "cSpell.words": ["alphanum", "dicebear", "Murdr"],
+
+  // Tailwind Fold
+  "tailwind-fold.foldStyle": "QUOTES",
+  "tailwind-fold.showTailwindImage": false,
+  "tailwind-fold.unfoldIfLineSelected": true,
+  "tailwind-fold.foldLengthThreshold": 10,
+
+  // Jest
+  "jest.autoRun": "off"
+}
