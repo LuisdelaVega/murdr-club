@@ -27,7 +27,7 @@ export default async function GamePage({ params }: GamePageProps) {
   const [firstName, lastName] = domainWord.split("-");
 
   return (
-    <section className="w-full h-[100vh] flex flex-col justify-center align-middle items-center">
+    <section className="w-full h-[100dvh] flex flex-col justify-center align-middle items-center">
       <Avatar
         className="h-72 w-72"
         style={{ backgroundColor: faker.color.rgb() }}
