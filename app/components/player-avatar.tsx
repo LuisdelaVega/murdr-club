@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Player } from "party/types";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -12,13 +11,7 @@ export function PlayerAvatar({
   displayName = false,
 }: PlayerAvatarProps) {
   return (
-    <div
-      key={player.id}
-      className={cn(
-        "flex flex-col items-center gap-1",
-        // player.isPartyLeader && "bg-amber-300",
-      )}
-    >
+    <div key={player.id} className="flex flex-col items-center gap-1">
       <Avatar
         className="h-20 w-20"
         style={{ backgroundColor: player.image.backgroundColor }}
@@ -30,7 +23,7 @@ export function PlayerAvatar({
         <AvatarFallback>{`${player.name[0].toUpperCase()}`}</AvatarFallback>
       </Avatar>
 
-      {displayName && <span className="uppercase">{player.name}</span>}
+      {displayName && <span>{player.name}</span>}
     </div>
   );
 }

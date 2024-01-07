@@ -17,9 +17,17 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 
+const ZOD_STRING = {
+  schema: z
+    .string()
+    .regex(/^[a-zA-Z0-9]*$/, "Only letters and numbers are allowed")
+    .toUpperCase()
+    .trim(),
+};
+
 const formSchema = z.object({
-  roomId: z.string().length(8),
-  username: z.string().min(2).max(16),
+  roomId: ZOD_STRING.schema.length(8),
+  username: ZOD_STRING.schema.min(2).max(16),
 });
 
 export function JoinRoomForm() {
@@ -57,9 +65,14 @@ export function JoinRoomForm() {
             <FormItem>
               <FormLabel>Room ID</FormLabel>
               <FormControl>
-                <Input placeholder="ABCD1234" {...field} />
+                <Input
+                  className="uppercase"
+                  placeholder="ABCD1234"
+                  {...field}
+                />
               </FormControl>
               <Button
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   field.onChange(uid.rnd());
@@ -81,7 +94,11 @@ export function JoinRoomForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="papaluisre" {...field} />
+                <Input
+                  className="uppercase"
+                  placeholder="papaluisre"
+                  {...field}
+                />
               </FormControl>
               <FormDescription>This is will be your username.</FormDescription>
               <FormMessage />

@@ -10,16 +10,20 @@ export default class Server implements Party.Server {
     this.room.broadcast(JSON.stringify(value));
   }
 
-  onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
+  onConnect(
+    connection: Party.Connection<unknown>,
+    ctx: Party.ConnectionContext,
+  ): void | Promise<void> {
     // A websocket just connected!
     console.log(
-      `Connected: id: ${conn.id} room: ${this.room.id} url: ${
+      `Connected with id: ${connection.id} room: ${this.room.id} url: ${
         new URL(ctx.request.url).pathname
       }`,
     );
   }
 
   onClose(connection: Party.Connection<unknown>): void | Promise<void> {
+    console.log(`Disconnected: id: ${connection.id} room: ${this.room.id}`);
     // Remove the disconnected player from the players array
     let removedLeader = false;
 
@@ -33,7 +37,7 @@ export default class Server implements Party.Server {
       return passedTheCheck;
     });
 
-    if (removedLeader) {
+    if (removedLeader && this.players.length) {
       this.players[0].isPartyLeader = true;
     }
 
@@ -43,7 +47,11 @@ export default class Server implements Party.Server {
     });
   }
 
-  onMessage(message: string, _sender: Party.Connection) {
+  onMessage(
+    message: string,
+    sender: Party.Connection<unknown>,
+  ): void | Promise<void> {
+    console.log(`Message from connection with id: ${sender.id}`);
     const data = JSON.parse(message) as ClientMessage;
 
     switch (data.type) {
