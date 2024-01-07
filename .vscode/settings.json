@@ -22,7 +22,7 @@
   },
 
   // Code Spell Checker
-  "cSpell.words": ["alphanum", "dicebear", "Murdr"],
+  "cSpell.words": ["alphanum", "dicebear", "hookform", "Murdr", "partysocket"],
 
   // Tailwind Fold
   "tailwind-fold.foldStyle": "QUOTES",
