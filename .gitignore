@@ -13,6 +13,9 @@
 /.next/
 /out/
 
+# Partykit
+/.partykit/
+
 # production
 /build
 
