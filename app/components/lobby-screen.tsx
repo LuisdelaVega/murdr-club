@@ -3,10 +3,9 @@ import { PlayerAvatar } from "./player-avatar";
 
 interface LobbyScreenProps {
   players: Player[];
-  room: string;
 }
 
-export function LobbyScreen({ players, room }: LobbyScreenProps) {
+export function LobbyScreen({ players }: LobbyScreenProps) {
   return (
     <div className="flex flex-col gap-4">
       {players.map((player) => (

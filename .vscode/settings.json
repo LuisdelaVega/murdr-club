@@ -13,6 +13,9 @@
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 
   // File Associations
   "files.associations": {
@@ -22,7 +25,16 @@
   },
 
   // Code Spell Checker
-  "cSpell.words": ["alphanum", "dicebear", "hookform", "Murdr", "partysocket"],
+  "cSpell.words": [
+    "alphanum",
+    "clsx",
+    "dicebear",
+    "hookform",
+    "lucide",
+    "Murdr",
+    "partysocket",
+    "tailwindcss"
+  ],
 
   // Tailwind Fold
   "tailwind-fold.foldStyle": "QUOTES",

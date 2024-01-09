@@ -12,7 +12,7 @@ interface GameManagerProps {
 }
 
 export function GameManager({ room, player }: GameManagerProps) {
-  const [players, setPlayers] = useState<Player[]>([player]);
+  const [players, setPlayers] = useState<Player[]>([]);
 
   const myPlayer = useMemo(() => {
     return players.find((val) => val.id === player.id);
@@ -47,7 +47,7 @@ export function GameManager({ room, player }: GameManagerProps) {
 
   return (
     <>
-      <LobbyScreen players={players} room={room} />
+      <LobbyScreen players={players} />
       {myPlayer?.isPartyLeader && "You're the party leader"}
     </>
   );
