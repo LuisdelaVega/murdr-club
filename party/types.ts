@@ -6,7 +6,15 @@ export interface Player {
   id: string;
   name: string;
   isPartyLeader?: boolean;
+  connected?: boolean;
 }
+
+//#region Gate State
+type WaitingState = "WaitingForPlayers";
+type StartedState = "GameStarted";
+
+export type GameState = WaitingState | StartedState;
+//#endregion
 
 //#region Client Messages
 export interface AddPlayerMessage {
@@ -14,7 +22,16 @@ export interface AddPlayerMessage {
   player: Player;
 }
 
-export type ClientMessage = AddPlayerMessage;
+export interface StartGameMessage {
+  type: "StartGame";
+}
+
+export interface PlayerKillMessage {
+  type: "PlayerKill";
+  playerId:
+}
+
+export type ClientMessage = AddPlayerMessage | StartGameMessage;
 //#endregion
 
 //#region Server Messages
@@ -23,5 +40,9 @@ export interface PlayersUpdatedMessage {
   players: Player[];
 }
 
-export type ServerMessage = PlayersUpdatedMessage;
+export interface GameSateMessage {
+  type: GameState;
+}
+
+export type ServerMessage = PlayersUpdatedMessage | GameSateMessage;
 //#endregion

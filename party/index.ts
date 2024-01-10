@@ -1,10 +1,17 @@
 import * as Party from "partykit/server";
-import { ClientMessage, Player, PlayersUpdatedMessage } from "./types";
+import {
+  ClientMessage,
+  GameSateMessage,
+  GameState,
+  Player,
+  PlayersUpdatedMessage,
+} from "./types";
 
 export default class Server implements Party.Server {
   constructor(readonly room: Party.Room) {}
 
-  players: Player[] = [];
+  gameState: GameState = "WaitingForPlayers";
+  players: { [key: string]: Player } = {};
 
   broadcastToRoom<T>(value: T) {
     this.room.broadcast(JSON.stringify(value));
@@ -20,30 +27,31 @@ export default class Server implements Party.Server {
         new URL(ctx.request.url).pathname
       }`,
     );
+
+    this.broadcastToRoom<GameSateMessage>({
+      type: this.gameState,
+    });
   }
 
   onClose(connection: Party.Connection<unknown>): void | Promise<void> {
     console.log(`Disconnected: id: ${connection.id} room: ${this.room.id}`);
-    // Remove the disconnected player from the players array
-    let removedLeader = false;
 
-    this.players = this.players.filter((player) => {
-      let passedTheCheck = player.id !== connection.id;
+    const wasPartyLeader = this.players[connection.id]?.isPartyLeader;
+    this.players[connection.id].connected = false;
+    this.players[connection.id].isPartyLeader = false;
 
-      if (!passedTheCheck) {
-        removedLeader = !!player.isPartyLeader;
+    if (wasPartyLeader) {
+      for (const id of Object.keys(this.players)) {
+        if (id !== connection.id && this.players[id].connected) {
+          this.players[id].isPartyLeader = true;
+          break;
+        }
       }
-
-      return passedTheCheck;
-    });
-
-    if (removedLeader && this.players.length) {
-      this.players[0].isPartyLeader = true;
     }
 
     this.broadcastToRoom<PlayersUpdatedMessage>({
       type: "PlayersUpdated",
-      players: this.players,
+      players: Object.values(this.players),
     });
   }
 
@@ -57,16 +65,31 @@ export default class Server implements Party.Server {
     switch (data.type) {
       case "AddPlayer":
         const { player } = data;
-        if (!this.players.length) {
-          player.isPartyLeader = true;
+
+        if (!this.players[player.id]) {
+          this.players[player.id] = player;
         }
 
-        this.players.push(player);
+        this.players[player.id].connected = true;
+
+        const playersArr = Object.values(this.players);
+
+        if (
+          !playersArr.length ||
+          !playersArr.find(({ isPartyLeader }) => isPartyLeader)
+        ) {
+          this.players[player.id].isPartyLeader = true;
+        }
 
         this.broadcastToRoom<PlayersUpdatedMessage>({
           type: "PlayersUpdated",
-          players: this.players,
+          players: Object.values(this.players),
         });
+        break;
+
+      case "StartGame":
+        this.gameState = "GameStarted";
+        this.broadcastToRoom<GameSateMessage>({ type: this.gameState });
         break;
 
       default:
