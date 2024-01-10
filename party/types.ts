@@ -28,7 +28,7 @@ export interface StartGameMessage {
 
 export interface PlayerKillMessage {
   type: "PlayerKill";
-  playerId:
+  playerId: Player["id"];
 }
 
 export type ClientMessage = AddPlayerMessage | StartGameMessage;
