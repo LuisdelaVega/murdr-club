@@ -1,13 +1,19 @@
 export interface Player {
+  id: string;
+  name: string;
   image: {
     backgroundColor: string;
     src: string;
   };
-  id: string;
-  name: string;
-  isPartyLeader?: boolean;
   connected?: boolean;
+  isAlive?: boolean;
+  isPartyLeader?: boolean;
+  killWords?: string[];
+  target?: Target | undefined;
+  victims?: Target[];
 }
+
+export interface Target extends Pick<Player, "id" | "name" | "image"> {}
 
 //#region Gate State
 type WaitingState = "WaitingForPlayers";
@@ -46,9 +52,17 @@ export interface PlayersUpdatedMessage {
   players: Player[];
 }
 
+export interface PlayerUpdatedMessage {
+  type: "PlayerUpdated";
+  player: Player;
+}
+
 export interface GameSateMessage {
   type: GameState;
 }
 
-export type ServerMessage = PlayersUpdatedMessage | GameSateMessage;
+export type ServerMessage =
+  | PlayersUpdatedMessage
+  | GameSateMessage
+  | PlayerUpdatedMessage;
 //#endregion

@@ -26,12 +26,12 @@ export default async function GamePage({ params }: GamePageProps) {
   faker.seed(Number(fakerSeed));
 
   const player: Player = {
+    id: playerId,
+    name: username,
     image: {
       backgroundColor: faker.color.rgb(),
       src: avatarImg,
     },
-    id: playerId,
-    name: username,
   };
 
   return (

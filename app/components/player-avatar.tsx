@@ -1,14 +1,16 @@
-import { Player } from "party/types";
+import { type Player } from "party/types";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface PlayerAvatarProps {
   player: Player;
   displayName?: boolean;
+  displayLeaderTag?: boolean;
 }
 
 export function PlayerAvatar({
   player,
   displayName = false,
+  displayLeaderTag = false,
 }: PlayerAvatarProps) {
   return (
     <div key={player.id} className="flex flex-col items-center gap-1">
@@ -18,12 +20,16 @@ export function PlayerAvatar({
       >
         <AvatarImage
           src={player.image.src}
-          alt={`lorelei image with for player with username: ${player.name}`}
+          alt={`Image for player with username: ${player.name}`}
         />
         <AvatarFallback>{`${player.name[0].toUpperCase()}`}</AvatarFallback>
       </Avatar>
 
-      {displayName && <span>{player.name}</span>}
+      {displayName && (
+        <span>
+          {player.name} {displayLeaderTag && player.isPartyLeader && "(Leader)"}
+        </span>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { GetGameStateResponse } from "party/types";
+import { type GetGameStateResponse } from "party/types";
 import { useForm } from "react-hook-form";
 import ShortUniqueId from "short-unique-id";
 import { toast } from "sonner";

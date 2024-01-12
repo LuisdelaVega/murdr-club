@@ -1,12 +1,14 @@
 import * as Party from "partykit/server";
 import {
-  ClientMessage,
-  GameSateMessage,
-  GameState,
-  GetGameStateResponse,
-  Player,
-  PlayersUpdatedMessage,
+  type ClientMessage,
+  type GameSateMessage,
+  type GameState,
+  type GetGameStateResponse,
+  type Player,
+  type PlayerUpdatedMessage,
+  type PlayersUpdatedMessage,
 } from "./types";
+import { shuffleArray } from "./utils/shuffle-array";
 
 export default class Server implements Party.Server {
   constructor(readonly room: Party.Room) {}
@@ -55,14 +57,16 @@ export default class Server implements Party.Server {
   onClose(connection: Party.Connection<unknown>): void | Promise<void> {
     console.log(`Disconnected: id: ${connection.id} room: ${this.room.id}`);
 
-    const wasPartyLeader = this.players[connection.id]?.isPartyLeader;
-    this.players[connection.id].connected = false;
-    this.players[connection.id].isPartyLeader = false;
+    const disconnectedPlayer = this.players[connection.id];
+    const wasPartyLeader = disconnectedPlayer?.isPartyLeader;
+    disconnectedPlayer.connected = false;
+    disconnectedPlayer.isPartyLeader = false;
 
+    const players = Object.values(this.players);
     if (wasPartyLeader) {
-      for (const id of Object.keys(this.players)) {
-        if (id !== connection.id && this.players[id].connected) {
-          this.players[id].isPartyLeader = true;
+      for (const player of players) {
+        if (player.id !== disconnectedPlayer.id && player.connected) {
+          player.isPartyLeader = true;
           break;
         }
       }
@@ -70,7 +74,7 @@ export default class Server implements Party.Server {
 
     this.broadcastToRoom<PlayersUpdatedMessage>({
       type: "PlayersUpdated",
-      players: Object.values(this.players),
+      players,
     });
   }
 
@@ -83,13 +87,15 @@ export default class Server implements Party.Server {
 
     switch (data.type) {
       case "AddPlayer":
-        const { player } = data;
+        const {
+          player: { id },
+        } = data;
 
-        if (!this.players[player.id]) {
-          this.players[player.id] = player;
+        if (!this.players[id]) {
+          this.players[id] = data.player;
         }
 
-        this.players[player.id].connected = true;
+        this.players[id].connected = true;
 
         const playersArr = Object.values(this.players);
 
@@ -97,7 +103,7 @@ export default class Server implements Party.Server {
           !playersArr.length ||
           !playersArr.find(({ isPartyLeader }) => isPartyLeader)
         ) {
-          this.players[player.id].isPartyLeader = true;
+          this.players[id].isPartyLeader = true;
         }
 
         this.broadcastToRoom<PlayersUpdatedMessage>({
@@ -109,6 +115,31 @@ export default class Server implements Party.Server {
       case "StartGame":
         this.gameState = "GameStarted";
         this.broadcastToRoom<GameSateMessage>({ type: this.gameState });
+
+        const shuffledPlayers = shuffleArray<Player>(
+          Object.values(this.players),
+        );
+
+        for (let index = 0; index < shuffledPlayers.length; index++) {
+          const player = shuffledPlayers[index];
+          const targetPlayer =
+            shuffledPlayers[
+              index === shuffledPlayers.length - 1 ? 0 : index + 1
+            ];
+
+          player.target = {
+            id: targetPlayer.id,
+            image: targetPlayer.image,
+            name: targetPlayer.name,
+          };
+
+          this.room.getConnection(player.id)?.send(
+            JSON.stringify({
+              type: "PlayerUpdated",
+              player,
+            } as PlayerUpdatedMessage),
+          );
+        }
         break;
 
       default:
