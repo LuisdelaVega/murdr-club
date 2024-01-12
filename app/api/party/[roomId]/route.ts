@@ -1,15 +1,19 @@
 import { PARTYKIT_URL } from "@/env";
+import { type NextRequest } from "next/server";
 
 export async function GET(
-  _request: Request,
+  _request: NextRequest,
   { params }: { params: { roomId: string } },
 ) {
-  const data = await (
-    await fetch(`${PARTYKIT_URL}/party/${params.roomId}`)
-  ).json();
+  const response = await fetch(`${PARTYKIT_URL}/party/${params.roomId}`);
 
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  if (!response.ok) {
+    return new Response("Something unexpected happened", {
+      status: 500,
+    });
+  }
+
+  const data = await response.json();
+
+  return Response.json({ ...data });
 }
