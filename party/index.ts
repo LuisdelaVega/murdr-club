@@ -1,9 +1,9 @@
 import * as Party from "partykit/server";
 import {
   type ClientMessage,
+  type GameAlreadyStartedMessage,
   type GameSateMessage,
   type GameState,
-  type GetGameStateResponse,
   type Player,
   type PlayerUpdatedMessage,
   type PlayersUpdatedMessage,
@@ -16,32 +16,15 @@ export default class Server implements Party.Server {
   gameState: GameState = "WaitingForPlayers";
   players: { [key: string]: Player } = {};
 
-  //#region HTTP
-  onRequest(req: Party.Request): Response | Promise<Response> {
-    if (req.method === "GET") {
-      console.log("Received HTTP request");
-      return new Response(
-        JSON.stringify({ gameState: this.gameState } as GetGameStateResponse),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    return new Response("Not found", { status: 404 });
-  }
-  //#endregion
-
   //#region Websocket
   broadcastToRoom<T>(value: T) {
     this.room.broadcast(JSON.stringify(value));
   }
 
-  onConnect(
+  async onConnect(
     connection: Party.Connection<unknown>,
     ctx: Party.ConnectionContext,
-  ): void | Promise<void> {
+  ): Promise<void> {
     // A websocket just connected!
     console.log(
       `Connected with id: ${connection.id} room: ${this.room.id} url: ${
@@ -54,7 +37,7 @@ export default class Server implements Party.Server {
     });
   }
 
-  onClose(connection: Party.Connection<unknown>): void | Promise<void> {
+  async onClose(connection: Party.Connection<unknown>): Promise<void> {
     console.log(`Disconnected: id: ${connection.id} room: ${this.room.id}`);
 
     const disconnectedPlayer = this.players[connection.id];
@@ -78,15 +61,24 @@ export default class Server implements Party.Server {
     });
   }
 
-  onMessage(
+  async onMessage(
     message: string,
     sender: Party.Connection<unknown>,
-  ): void | Promise<void> {
+  ): Promise<void> {
     console.log(`Message from connection with id: ${sender.id}`);
     const data = JSON.parse(message) as ClientMessage;
 
     switch (data.type) {
       case "AddPlayer":
+        if (this.gameState === "GameStarted") {
+          sender.send(
+            JSON.stringify({
+              type: "GameAlreadyStarted",
+            } as GameAlreadyStartedMessage),
+          );
+          return;
+        }
+
         const {
           player: { id },
         } = data;

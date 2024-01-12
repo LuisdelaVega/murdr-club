@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { type GetGameStateResponse } from "party/types";
 import { useForm } from "react-hook-form";
 import ShortUniqueId from "short-unique-id";
 import { toast } from "sonner";
@@ -51,29 +50,8 @@ export function JoinRoomForm() {
 
   // 2. Define a submit handler.
   function onSubmit({ roomId, username }: z.infer<typeof formSchema>) {
-    fetch(`/api/party/${roomId}`)
-      .then((res) => res.json())
-      .then((res: GetGameStateResponse) => {
-        switch (res.gameState) {
-          case "WaitingForPlayers":
-            toast.success("Joining the room! 🎉");
-            router.push(`/${roomId}/${username}/${uid.rnd()}`);
-            break;
-
-          case "GameStarted":
-            toast.warning("Sorry! This game has already started 😓");
-            break;
-
-          default:
-            toast.error("Something unexpected happened! Try again.");
-            break;
-        }
-      })
-      .catch(() =>
-        toast.error(
-          "Something unexpected happened! Please try again at a later time.",
-        ),
-      );
+    toast.info("Attempting to join the Room");
+    router.push(`/${roomId}/${username}/${uid.rnd()}`);
   }
 
   return (

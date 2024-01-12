@@ -27,7 +27,7 @@ export function LobbyScreen({
         ))}
       </div>
 
-      {isPartyLeader && (
+      {players.length > 1 && isPartyLeader && (
         <Button
           onClick={(e) => {
             e.preventDefault();

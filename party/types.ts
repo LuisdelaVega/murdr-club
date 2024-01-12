@@ -1,3 +1,4 @@
+//#region Player
 export interface Player {
   id: string;
   name: string;
@@ -14,18 +15,13 @@ export interface Player {
 }
 
 export interface Target extends Pick<Player, "id" | "name" | "image"> {}
+//#endregion
 
 //#region Gate State
 type WaitingState = "WaitingForPlayers";
 type StartedState = "GameStarted";
 
 export type GameState = WaitingState | StartedState;
-//#endregion
-
-//#region HTTP Responses
-export interface GetGameStateResponse {
-  gameState: GameState;
-}
 //#endregion
 
 //#region Client Messages
@@ -61,8 +57,13 @@ export interface GameSateMessage {
   type: GameState;
 }
 
+export interface GameAlreadyStartedMessage {
+  type: "GameAlreadyStarted";
+}
+
 export type ServerMessage =
   | PlayersUpdatedMessage
   | GameSateMessage
-  | PlayerUpdatedMessage;
+  | PlayerUpdatedMessage
+  | GameAlreadyStartedMessage;
 //#endregion

@@ -9,6 +9,7 @@ import {
 } from "party/types";
 import usePartySocket from "partysocket/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { LobbyScreen } from "./lobby-screen";
 
 interface GameManagerProps {
@@ -20,6 +21,7 @@ export function GameManager({ room, player }: GameManagerProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [gameState, setGameState] = useState<GameState | undefined>();
   const [myPlayer, setMyPlayer] = useState<Player>(player);
+  const [gameAlreadyStarted, setGameAlreadyStarted] = useState<boolean>(false);
 
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
@@ -61,11 +63,20 @@ export function GameManager({ room, player }: GameManagerProps) {
           setGameState(data.type);
           break;
 
+        case "GameAlreadyStarted":
+          toast.warning("You're too late! This game has already started 😓");
+          setGameAlreadyStarted(true);
+          break;
+
         default:
           break;
       }
     },
   });
+
+  if (gameAlreadyStarted) {
+    return "Game already started 😓";
+  }
 
   switch (gameState) {
     case "WaitingForPlayers":
