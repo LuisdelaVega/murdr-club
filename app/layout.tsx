@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProviderWrapper } from "./components/providers/theme-provider-wrapper";
+import { Toaster } from "./components/ui/sonner";
 import "./globals.css";
 import { cn } from "./lib/utils";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main>{children}</main>
+          <Toaster richColors closeButton />
         </ThemeProviderWrapper>
       </body>
     </html>

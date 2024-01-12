@@ -41,17 +41,18 @@ export function GameManager({ room, player }: GameManagerProps) {
         } as AddPlayerMessage),
       );
     },
-    onMessage(event) {
-      const message = JSON.parse(event.data) as ServerMessage;
+    onMessage(message) {
+      const data = JSON.parse(message.data) as ServerMessage;
 
-      switch (message.type) {
+      switch (data.type) {
         case "PlayersUpdated":
-          setPlayers(message.players);
+          setPlayers(data.players);
           break;
 
         case "WaitingForPlayers":
         case "GameStarted":
-          setGameState(message.type);
+          setGameState(data.type);
+          break;
 
         default:
           break;

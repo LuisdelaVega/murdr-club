@@ -3,6 +3,7 @@ import {
   ClientMessage,
   GameSateMessage,
   GameState,
+  GetGameStateResponse,
   Player,
   PlayersUpdatedMessage,
 } from "./types";
@@ -13,6 +14,24 @@ export default class Server implements Party.Server {
   gameState: GameState = "WaitingForPlayers";
   players: { [key: string]: Player } = {};
 
+  //#region HTTP
+  onRequest(req: Party.Request): Response | Promise<Response> {
+    if (req.method === "GET") {
+      console.log("Received HTTP request");
+      return new Response(
+        JSON.stringify({ gameState: this.gameState } as GetGameStateResponse),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    return new Response("Not found", { status: 404 });
+  }
+  //#endregion
+
+  //#region Websocket
   broadcastToRoom<T>(value: T) {
     this.room.broadcast(JSON.stringify(value));
   }
@@ -96,6 +115,7 @@ export default class Server implements Party.Server {
         break;
     }
   }
+  //#endregion
 }
 
 Server satisfies Party.Worker;

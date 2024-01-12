@@ -16,6 +16,12 @@ type StartedState = "GameStarted";
 export type GameState = WaitingState | StartedState;
 //#endregion
 
+//#region HTTP Responses
+export interface GetGameStateResponse {
+  gameState: GameState;
+}
+//#endregion
+
 //#region Client Messages
 export interface AddPlayerMessage {
   type: "AddPlayer";
