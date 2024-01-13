@@ -3,36 +3,43 @@
 import { PARTYKIT_HOST } from "@/env";
 import {
   type AddPlayerMessage,
+  type Avatar,
   type GameState,
   type Player,
   type ServerMessage,
 } from "party/types";
 import usePartySocket from "partysocket/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { LobbyScreen } from "./lobby-screen";
+import { GameScreen } from "./game-state-screens/game-screen";
+import { LobbyScreen } from "./game-state-screens/lobby-screen";
 
 interface GameManagerProps {
   room: string;
-  player: Player;
+  avatar: Avatar;
 }
 
-export function GameManager({ room, player }: GameManagerProps) {
-  const [players, setPlayers] = useState<Player[]>([]);
+export function GameManager({ room, avatar }: GameManagerProps) {
+  const [myPlayer, setMyPlayer] = useState<Player>();
+  const [avatars, setAvatars] = useState<Avatar[]>([avatar]);
   const [gameState, setGameState] = useState<GameState | undefined>();
-  const [myPlayer, setMyPlayer] = useState<Player>(player);
-  const [gameAlreadyStarted, setGameAlreadyStarted] = useState<boolean>(false);
+  const [tooLate, setTooLate] = useState<boolean>(false);
+
+  const myAvatar = useMemo(
+    () => avatars.find(({ id }) => avatar.id === id),
+    [avatar.id, avatars],
+  );
 
   const socket = usePartySocket({
     host: PARTYKIT_HOST,
     room,
-    id: player.id,
+    id: avatar.id,
     onOpen() {
       // After connecting to the websocket server, register add yourself as a player
       socket.send(
         JSON.stringify({
           type: "AddPlayer",
-          player: player,
+          avatar,
         } as AddPlayerMessage),
       );
     },
@@ -41,20 +48,10 @@ export function GameManager({ room, player }: GameManagerProps) {
 
       switch (data.type) {
         case "PlayersUpdated":
-          setPlayers(data.players);
-
-          // Update my player
-          const myUpdatedPlayer = data.players.find(
-            ({ id }) => id === player.id,
-          );
-
-          if (myUpdatedPlayer) {
-            setMyPlayer(myUpdatedPlayer);
-          }
+          setAvatars(data.avatars);
           break;
 
         case "PlayerUpdated":
-          console.log(data.player);
           setMyPlayer(data.player);
           break;
 
@@ -63,9 +60,9 @@ export function GameManager({ room, player }: GameManagerProps) {
           setGameState(data.type);
           break;
 
-        case "GameAlreadyStarted":
+        case "TooLate":
           toast.warning("You're too late! This game has already started 😓");
-          setGameAlreadyStarted(true);
+          setTooLate(true);
           break;
 
         default:
@@ -74,21 +71,28 @@ export function GameManager({ room, player }: GameManagerProps) {
     },
   });
 
-  if (gameAlreadyStarted) {
+  if (tooLate) {
     return "Game already started 😓";
   }
 
   switch (gameState) {
+    case "GameStarted":
+      if (myPlayer) {
+        return <GameScreen player={myPlayer} socket={socket} />;
+      }
+
     case "WaitingForPlayers":
-      return (
-        <LobbyScreen
-          players={players}
-          socket={socket}
-          isPartyLeader={myPlayer.isPartyLeader}
-        />
-      );
+      if (myAvatar) {
+        return (
+          <LobbyScreen
+            avatars={avatars}
+            socket={socket}
+            isPartyLeader={myAvatar.isPartyLeader}
+          />
+        );
+      }
 
     default:
-      return "Game Started screen";
+      return "Waiting for server...";
   }
 }

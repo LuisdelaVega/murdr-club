@@ -1,12 +1,12 @@
 import * as Party from "partykit/server";
 import {
   type ClientMessage,
-  type GameAlreadyStartedMessage,
   type GameSateMessage,
   type GameState,
   type Player,
   type PlayerUpdatedMessage,
   type PlayersUpdatedMessage,
+  type TooLateMessage,
 } from "./types";
 import { shuffleArray } from "./utils/shuffle-array";
 
@@ -19,6 +19,17 @@ export default class Server implements Party.Server {
   //#region Websocket
   broadcastToRoom<T>(value: T) {
     this.room.broadcast(JSON.stringify(value));
+  }
+
+  getAvatars() {
+    return Object.values(this.players).map(
+      ({ id, image, name, isPartyLeader }) => ({
+        id,
+        image,
+        name,
+        isPartyLeader,
+      }),
+    );
   }
 
   async onConnect(
@@ -35,6 +46,17 @@ export default class Server implements Party.Server {
     this.broadcastToRoom<GameSateMessage>({
       type: this.gameState,
     });
+
+    const player = this.players[connection.id];
+
+    if (this.gameState === "GameStarted" && player) {
+      connection.send(
+        JSON.stringify({
+          type: "PlayerUpdated",
+          player,
+        } as PlayerUpdatedMessage),
+      );
+    }
   }
 
   async onClose(connection: Party.Connection<unknown>): Promise<void> {
@@ -46,6 +68,7 @@ export default class Server implements Party.Server {
     disconnectedPlayer.isPartyLeader = false;
 
     const players = Object.values(this.players);
+
     if (wasPartyLeader) {
       for (const player of players) {
         if (player.id !== disconnectedPlayer.id && player.connected) {
@@ -57,7 +80,7 @@ export default class Server implements Party.Server {
 
     this.broadcastToRoom<PlayersUpdatedMessage>({
       type: "PlayersUpdated",
-      players,
+      avatars: this.getAvatars(),
     });
   }
 
@@ -70,37 +93,45 @@ export default class Server implements Party.Server {
 
     switch (data.type) {
       case "AddPlayer":
-        if (this.gameState === "GameStarted") {
+        const {
+          avatar: { id },
+        } = data;
+
+        // If the game has already started and a new player is trying to join, don't allow it
+        if (this.gameState === "GameStarted" && !this.players[id]) {
           sender.send(
             JSON.stringify({
-              type: "GameAlreadyStarted",
-            } as GameAlreadyStartedMessage),
+              type: "TooLate",
+            } as TooLateMessage),
           );
           return;
         }
 
-        const {
-          player: { id },
-        } = data;
-
         if (!this.players[id]) {
-          this.players[id] = data.player;
+          this.players[id] = {
+            ...data.avatar,
+            connected: true,
+            isAlive: true,
+            killWords: ["word1", "word2", "word3"],
+            target: undefined,
+            victims: [],
+          };
         }
 
         this.players[id].connected = true;
 
-        const playersArr = Object.values(this.players);
+        const players = Object.values(this.players);
 
         if (
-          !playersArr.length ||
-          !playersArr.find(({ isPartyLeader }) => isPartyLeader)
+          !players.length ||
+          !players.find(({ isPartyLeader }) => isPartyLeader)
         ) {
           this.players[id].isPartyLeader = true;
         }
 
         this.broadcastToRoom<PlayersUpdatedMessage>({
           type: "PlayersUpdated",
-          players: Object.values(this.players),
+          avatars: this.getAvatars(),
         });
         break;
 

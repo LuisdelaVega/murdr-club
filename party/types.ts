@@ -1,20 +1,20 @@
 //#region Player
-export interface Player {
+export interface Avatar {
   id: string;
   name: string;
   image: {
     backgroundColor: string;
     src: string;
   };
-  connected?: boolean;
-  isAlive?: boolean;
   isPartyLeader?: boolean;
-  killWords?: string[];
-  target?: Target | undefined;
-  victims?: Target[];
 }
-
-export interface Target extends Pick<Player, "id" | "name" | "image"> {}
+export interface Player extends Avatar {
+  connected: boolean;
+  isAlive: boolean;
+  killWords: string[];
+  target: Avatar | undefined;
+  victims: Avatar[];
+}
 //#endregion
 
 //#region Gate State
@@ -27,7 +27,7 @@ export type GameState = WaitingState | StartedState;
 //#region Client Messages
 export interface AddPlayerMessage {
   type: "AddPlayer";
-  player: Player;
+  avatar: Avatar;
 }
 
 export interface StartGameMessage {
@@ -45,7 +45,7 @@ export type ClientMessage = AddPlayerMessage | StartGameMessage;
 //#region Server Messages
 export interface PlayersUpdatedMessage {
   type: "PlayersUpdated";
-  players: Player[];
+  avatars: Avatar[];
 }
 
 export interface PlayerUpdatedMessage {
@@ -57,13 +57,13 @@ export interface GameSateMessage {
   type: GameState;
 }
 
-export interface GameAlreadyStartedMessage {
-  type: "GameAlreadyStarted";
+export interface TooLateMessage {
+  type: "TooLate";
 }
 
 export type ServerMessage =
   | PlayersUpdatedMessage
   | GameSateMessage
   | PlayerUpdatedMessage
-  | GameAlreadyStartedMessage;
+  | TooLateMessage;
 //#endregion

@@ -1,33 +1,34 @@
-import { type Player, type StartGameMessage } from "party/types";
+import { type Avatar, type StartGameMessage } from "party/types";
 import type PartySocket from "partysocket";
-import { PlayerAvatar } from "./player-avatar";
-import { Button } from "./ui/button";
+import { PlayerAvatar } from "../player-avatar";
+import { Button } from "../ui/button";
 
 interface LobbyScreenProps {
-  players: Player[];
+  avatars: Avatar[];
   socket: PartySocket;
   isPartyLeader?: boolean;
 }
 
 export function LobbyScreen({
-  players,
+  avatars,
   socket,
   isPartyLeader = false,
 }: LobbyScreenProps) {
   return (
     <div className="flex flex-col gap-10 items-center">
-      <div className="flex flex-col gap-4">
-        {players.map((player) => (
+      <div className="flex flex-col gap-4 items-center">
+        {avatars.map((avatar) => (
           <PlayerAvatar
-            key={player.id}
-            player={player}
+            key={avatar.id}
+            avatar={avatar}
             displayName
             displayLeaderTag
+            isPartyLeader={avatar.isPartyLeader}
           />
         ))}
       </div>
 
-      {players.length > 1 && isPartyLeader && (
+      {avatars.length > 1 && isPartyLeader && (
         <Button
           onClick={(e) => {
             e.preventDefault();

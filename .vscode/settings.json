@@ -32,10 +32,12 @@
     "hookform",
     "lucide",
     "Murdr",
+    "papaluisre",
     "partykit",
     "partysocket",
     "sonner",
-    "tailwindcss"
+    "tailwindcss",
+    "vaul"
   ],
 
   // Tailwind Fold
