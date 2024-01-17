@@ -63,9 +63,9 @@ export function GameScreen({ player }: GameScreenProps) {
               <div className="flex flex-col gap-2 items-center">
                 <h2>Kill Words</h2>
                 <div className="flex flex-col gap-1 items-center">
-                  <span>forest</span>
-                  <span>story</span>
-                  <span>exercise</span>
+                  {player.killWords.map((word) => (
+                    <span key={word}>{word}</span>
+                  ))}
                 </div>
               </div>
             </DrawerDescription>

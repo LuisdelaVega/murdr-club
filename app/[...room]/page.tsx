@@ -3,6 +3,7 @@ import { lorelei } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { faker } from "@faker-js/faker";
 import { type Avatar } from "party/types";
+import { getSeedFromId } from "party/utils/get-seed-from-id";
 
 interface GamePageProps {
   params: {
@@ -13,24 +14,22 @@ interface GamePageProps {
 export default async function GamePage({ params }: GamePageProps) {
   const [room, name, id] = params.room;
 
-  // Create the player's Avatar image using the player's ID
-  const avatar = createAvatar(lorelei, {
-    seed: id,
-  });
+  faker.seed(getSeedFromId(id));
 
-  let fakerSeed = "";
-  for (let index = 0; index < id.length; index++) {
-    fakerSeed += id.charCodeAt(index);
-  }
-  faker.seed(Number(fakerSeed));
+  // Create the player's Avatar image using the player's ID
+  const diceBearAvatar = createAvatar(lorelei, {
+    seed: id,
+    backgroundColor: [
+      faker.color.rgb().substring(1),
+      faker.color.rgb().substring(1),
+    ],
+    backgroundType: ["gradientLinear"],
+  });
 
   const player: Avatar = {
     id,
     name,
-    image: {
-      backgroundColor: faker.color.rgb(),
-      src: await avatar.toDataUri(),
-    },
+    image: await diceBearAvatar.toDataUri(),
   };
 
   return (

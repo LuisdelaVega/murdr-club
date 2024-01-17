@@ -2,10 +2,7 @@
 export interface Avatar {
   id: string;
   name: string;
-  image: {
-    backgroundColor: string;
-    src: string;
-  };
+  image: string;
   isPartyLeader?: boolean;
 }
 export interface Player extends Avatar {

@@ -22,12 +22,9 @@ export function PlayerAvatar({
 
   return (
     <div key={avatar.id} className="flex flex-col items-center gap-1 w-fit">
-      <Avatar
-        className={size === "sm" ? "h-20 w-20" : "h-44 w-44"}
-        style={{ backgroundColor: avatar.image.backgroundColor }}
-      >
+      <Avatar className={size === "sm" ? "h-20 w-20" : "h-44 w-44"}>
         <AvatarImage
-          src={avatar.image.src}
+          src={avatar.image}
           alt={`Image for player with username: ${avatar.name}`}
         />
         <AvatarFallback>{`${avatar.name[0].toUpperCase()}`}</AvatarFallback>

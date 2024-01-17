@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import ShortUniqueId from "short-unique-id";
 import { toast } from "sonner";
@@ -27,12 +29,17 @@ const ZOD_STRING = {
 };
 
 const formSchema = z.object({
-  roomId: ZOD_STRING.schema.length(8),
-  username: ZOD_STRING.schema.min(2).max(16),
+  room: ZOD_STRING.schema.length(8),
+  name: ZOD_STRING.schema.min(2).max(16),
 });
 
 export function JoinRoomForm() {
   const router = useRouter();
+
+  // Get the values from localStorage
+  const storedRoom = useRef(localStorage.getItem("murdr-club-room") ?? "");
+  const storedName = useRef(localStorage.getItem("murdr-club-name") ?? "");
+  const storedId = useRef(localStorage.getItem("murdr-club-id") ?? "");
 
   const uid = new ShortUniqueId({
     dictionary: "alphanum_upper",
@@ -43,42 +50,69 @@ export function JoinRoomForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      roomId: "",
-      username: "",
+      room: "",
+      name: storedName.current,
     },
   });
 
+  function navigateToRoom(room: string, name: string, id: string) {
+    router.push(`/${room}/${name}/${id}`);
+  }
+
   // 2. Define a submit handler.
-  function onSubmit({ roomId, username }: z.infer<typeof formSchema>) {
+  function onSubmit({ room, name }: z.infer<typeof formSchema>) {
+    let id = uid.rnd();
+
+    if (storedRoom.current === room && storedName.current === name) {
+      id = storedId.current;
+    } else {
+      // Store values in localStorage
+      localStorage.setItem("murdr-club-room", room);
+      localStorage.setItem("murdr-club-name", name);
+      localStorage.setItem("murdr-club-id", id);
+    }
+
     toast.info("Attempting to join the Room");
-    router.push(`/${roomId}/${username}/${uid.rnd()}`);
+
+    navigateToRoom(room, name, id);
   }
 
   return (
     <Form {...form}>
+      {storedRoom.current && storedName.current && storedId.current && (
+        <Button asChild variant="link" className="underline">
+          <Link
+            href={`/${storedRoom.current}/${storedName.current}/${storedId.current}`}
+          >
+            Click here to join your previous game
+          </Link>
+        </Button>
+      )}
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Room ID */}
         <FormField
           control={form.control}
-          name="roomId"
+          name="room"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Room ID</FormLabel>
+              <FormLabel className="uppercase">Room Id</FormLabel>
               <FormControl>
                 <Input
                   className="uppercase"
-                  placeholder="ABCD1234"
+                  placeholder="Enter 8-Character Code"
                   {...field}
                 />
               </FormControl>
               <Button
                 type="button"
+                className="uppercase"
                 onClick={(e) => {
                   e.preventDefault();
                   field.onChange(uid.rnd());
                 }}
               >
-                Generate Room ID
+                Generate
               </Button>
               <FormDescription>This is id for the Room.</FormDescription>
               <FormMessage />
@@ -86,27 +120,31 @@ export function JoinRoomForm() {
           )}
         />
 
-        {/* Username */}
+        {/* name */}
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel className="uppercase">Name</FormLabel>
               <FormControl>
                 <Input
                   className="uppercase"
-                  placeholder="papaluisre"
+                  placeholder="Enter your name"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>This is will be your username.</FormDescription>
+              <FormDescription>
+                Other players will see this name.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="uppercase">
+          Play
+        </Button>
       </form>
     </Form>
   );

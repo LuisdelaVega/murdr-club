@@ -8,6 +8,7 @@ import {
   type PlayersUpdatedMessage,
   type TooLateMessage,
 } from "./types";
+import { generateKillWords } from "./utils/generate-kill-words";
 import { shuffleArray } from "./utils/shuffle-array";
 
 export default class Server implements Party.Server {
@@ -112,7 +113,7 @@ export default class Server implements Party.Server {
             ...data.avatar,
             connected: true,
             isAlive: true,
-            killWords: ["word1", "word2", "word3"],
+            killWords: generateKillWords(id),
             target: undefined,
             victims: [],
           };
