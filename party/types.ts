@@ -5,11 +5,16 @@ export interface Avatar {
   image: string;
   isPartyLeader?: boolean;
 }
+
+interface Target extends Avatar {
+  connected: boolean;
+}
+
 export interface Player extends Avatar {
   connected: boolean;
   isAlive: boolean;
   killWords: string[];
-  target: Avatar | undefined;
+  target: Target | undefined;
   victims: Avatar[];
   killedBy?: Avatar;
 }

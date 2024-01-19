@@ -24,6 +24,7 @@ export function handleStartGame(server: Server) {
       id: targetPlayer.id,
       image: targetPlayer.image,
       name: targetPlayer.name,
+      connected: targetPlayer.connected,
     };
 
     server.room.getConnection(player.id)?.send(

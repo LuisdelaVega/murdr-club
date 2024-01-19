@@ -1,6 +1,6 @@
 import { GameManager } from "@/components/game-manager";
 import { lorelei } from "@dicebear/collection";
-import { createAvatar } from "@dicebear/core";
+import { createAvatar, type Options } from "@dicebear/core";
 import { faker } from "@faker-js/faker";
 import { type Avatar } from "party/types";
 import { getSeedFromId } from "party/utils/get-seed-from-id";
@@ -16,15 +16,19 @@ export default async function GamePage({ params }: GamePageProps) {
 
   faker.seed(getSeedFromId(id));
 
-  // Create the player's Avatar image using the player's ID
-  const diceBearAvatar = createAvatar(lorelei, {
+  const avatarOptions: Partial<lorelei.Options & Options> = {
     seed: id,
-    backgroundColor: [
-      faker.color.rgb().substring(1),
-      faker.color.rgb().substring(1),
-    ],
-    backgroundType: ["gradientLinear"],
-  });
+    backgroundColor: [faker.color.rgb().substring(1)],
+    backgroundType: ["solid"],
+  };
+
+  if (faker.number.int({ min: 0, max: 100 }) < 10) {
+    avatarOptions.backgroundColor!.push(faker.color.rgb().substring(1));
+    avatarOptions.backgroundType![0] = "gradientLinear";
+  }
+
+  // Create the player's Avatar image using the player's ID
+  const diceBearAvatar = createAvatar(lorelei, avatarOptions);
 
   const player: Avatar = {
     id,

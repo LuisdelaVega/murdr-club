@@ -69,12 +69,18 @@ export default class Server implements Party.Server {
       }`,
     );
 
-    this.broadcastToRoom<GameSateMessage>({
-      type: this.gameState,
-    });
+    connection.send(
+      JSON.stringify({
+        type: this.gameState,
+      } as GameSateMessage),
+    );
 
     const player = this.players[connection.id];
 
+    /**
+     * This handles the case where a player had been added to the room
+     * and they disconnected for some reason (browser refresh, for example).
+     */
     if (this.gameState === "GameStarted" && player) {
       connection.send(
         JSON.stringify({
