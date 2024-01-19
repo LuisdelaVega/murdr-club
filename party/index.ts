@@ -1,36 +1,61 @@
+import { differenceInDays } from "date-fns";
 import * as Party from "partykit/server";
-import {
-  type ClientMessage,
-  type GameSateMessage,
-  type GameState,
-  type Player,
-  type PlayerUpdatedMessage,
-  type PlayersUpdatedMessage,
-  type TooLateMessage,
+import type {
+  Avatar,
+  ClientMessage,
+  GameSateMessage,
+  GameState,
+  Player,
+  PlayerUpdatedMessage,
+  Players,
+  PlayersUpdatedMessage,
 } from "./types";
-import { generateKillWords } from "./utils/generate-kill-words";
-import { shuffleArray } from "./utils/shuffle-array";
+import { handleAddPlayer } from "./utils/message-handlers/add-player";
+import { handleStartGame } from "./utils/message-handlers/start-game";
 
 export default class Server implements Party.Server {
   constructor(readonly room: Party.Room) {}
 
   gameState: GameState = "WaitingForPlayers";
-  players: { [key: string]: Player } = {};
+  players: Players = {};
+  lastPlayed: number | undefined = undefined;
+
+  async onStart(): Promise<void> {
+    if (!(await this.room.storage.get<number>("lastPlayed"))) {
+      this.lastPlayed = Date.now();
+      this.room.storage.put<number>("lastPlayed", Date.now());
+      return;
+    }
+
+    this.lastPlayed = await this.room.storage.get<number>("lastPlayed");
+
+    // Clear the storage after 2 days have passed
+    if (this.lastPlayed && differenceInDays(this.lastPlayed, Date.now()) < 2) {
+      this.players = (await this.room.storage.get<Players>("players")) ?? {};
+      this.gameState =
+        (await this.room.storage.get<GameState>("gameState")) ??
+        "WaitingForPlayers";
+    } else {
+      this.room.storage.deleteAll();
+    }
+  }
+
+  getAvatarFromPlayer({ id, image, name, isPartyLeader }: Player): Avatar {
+    return {
+      id,
+      image,
+      name,
+      isPartyLeader,
+    };
+  }
+
+  getAvatars(): Avatar[] {
+    return Object.values(this.players).map(this.getAvatarFromPlayer);
+  }
 
   //#region Websocket
   broadcastToRoom<T>(value: T) {
     this.room.broadcast(JSON.stringify(value));
-  }
-
-  getAvatars() {
-    return Object.values(this.players).map(
-      ({ id, image, name, isPartyLeader }) => ({
-        id,
-        image,
-        name,
-        isPartyLeader,
-      }),
-    );
   }
 
   async onConnect(
@@ -64,6 +89,16 @@ export default class Server implements Party.Server {
     console.log(`Disconnected: id: ${connection.id} room: ${this.room.id}`);
 
     const disconnectedPlayer = this.players[connection.id];
+
+    /**
+     * This happens when the game has already started and someone else
+     * tried to join. No player was added for that connection so
+     * `disconnectedPlayer` will be undefined and there's nothing left to do.
+     */
+    if (!disconnectedPlayer) {
+      return;
+    }
+
     const wasPartyLeader = disconnectedPlayer?.isPartyLeader;
     disconnectedPlayer.connected = false;
     disconnectedPlayer.isPartyLeader = false;
@@ -78,6 +113,8 @@ export default class Server implements Party.Server {
         }
       }
     }
+
+    this.room.storage.put<Players>("players", this.players);
 
     this.broadcastToRoom<PlayersUpdatedMessage>({
       type: "PlayersUpdated",
@@ -94,76 +131,11 @@ export default class Server implements Party.Server {
 
     switch (data.type) {
       case "AddPlayer":
-        const {
-          avatar: { id },
-        } = data;
-
-        // If the game has already started and a new player is trying to join, don't allow it
-        if (this.gameState === "GameStarted" && !this.players[id]) {
-          sender.send(
-            JSON.stringify({
-              type: "TooLate",
-            } as TooLateMessage),
-          );
-          return;
-        }
-
-        if (!this.players[id]) {
-          this.players[id] = {
-            ...data.avatar,
-            connected: true,
-            isAlive: true,
-            killWords: generateKillWords(id),
-            target: undefined,
-            victims: [],
-          };
-        }
-
-        this.players[id].connected = true;
-
-        const players = Object.values(this.players);
-
-        if (
-          !players.length ||
-          !players.find(({ isPartyLeader }) => isPartyLeader)
-        ) {
-          this.players[id].isPartyLeader = true;
-        }
-
-        this.broadcastToRoom<PlayersUpdatedMessage>({
-          type: "PlayersUpdated",
-          avatars: this.getAvatars(),
-        });
+        handleAddPlayer(this, data, sender);
         break;
 
       case "StartGame":
-        this.gameState = "GameStarted";
-        this.broadcastToRoom<GameSateMessage>({ type: this.gameState });
-
-        const shuffledPlayers = shuffleArray<Player>(
-          Object.values(this.players),
-        );
-
-        for (let index = 0; index < shuffledPlayers.length; index++) {
-          const player = shuffledPlayers[index];
-          const targetPlayer =
-            shuffledPlayers[
-              index === shuffledPlayers.length - 1 ? 0 : index + 1
-            ];
-
-          player.target = {
-            id: targetPlayer.id,
-            image: targetPlayer.image,
-            name: targetPlayer.name,
-          };
-
-          this.room.getConnection(player.id)?.send(
-            JSON.stringify({
-              type: "PlayerUpdated",
-              player,
-            } as PlayerUpdatedMessage),
-          );
-        }
+        handleStartGame(this);
         break;
 
       default:

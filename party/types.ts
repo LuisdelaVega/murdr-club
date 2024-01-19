@@ -11,6 +11,11 @@ export interface Player extends Avatar {
   killWords: string[];
   target: Avatar | undefined;
   victims: Avatar[];
+  killedBy?: Avatar;
+}
+
+export interface Players {
+  [key: string]: Player;
 }
 //#endregion
 

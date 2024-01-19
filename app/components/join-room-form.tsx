@@ -1,5 +1,6 @@
 "use client";
 
+import { shortUniqueIdOptions } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,7 +30,7 @@ const ZOD_STRING = {
 };
 
 const formSchema = z.object({
-  room: ZOD_STRING.schema.length(8),
+  room: ZOD_STRING.schema.length(shortUniqueIdOptions.length ?? 8),
   name: ZOD_STRING.schema.min(2).max(16),
 });
 
@@ -41,12 +42,8 @@ export function JoinRoomForm() {
   const storedName = useRef(localStorage.getItem("murdr-club-name") ?? "");
   const storedId = useRef(localStorage.getItem("murdr-club-id") ?? "");
 
-  const uid = new ShortUniqueId({
-    dictionary: "alphanum_upper",
-    length: 8,
-  });
+  const uid = new ShortUniqueId(shortUniqueIdOptions);
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,7 +56,6 @@ export function JoinRoomForm() {
     router.push(`/${room}/${name}/${id}`);
   }
 
-  // 2. Define a submit handler.
   function onSubmit({ room, name }: z.infer<typeof formSchema>) {
     let id = uid.rnd();
 
@@ -100,7 +96,7 @@ export function JoinRoomForm() {
               <FormControl>
                 <Input
                   className="uppercase"
-                  placeholder="Enter 8-Character Code"
+                  placeholder={`Enter ${shortUniqueIdOptions.length}-Character Code`}
                   {...field}
                 />
               </FormControl>
