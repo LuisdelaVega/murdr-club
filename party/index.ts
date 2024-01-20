@@ -22,8 +22,7 @@ export default class Server implements Party.Server {
 
   async onStart(): Promise<void> {
     if (!(await this.room.storage.get<number>("lastPlayed"))) {
-      this.lastPlayed = Date.now();
-      this.room.storage.put<number>("lastPlayed", Date.now());
+      this.setLastPlayedDate();
       return;
     }
 
@@ -51,6 +50,11 @@ export default class Server implements Party.Server {
 
   getAvatars(): Avatar[] {
     return Object.values(this.players).map(this.getAvatarFromPlayer);
+  }
+
+  setLastPlayedDate() {
+    this.lastPlayed = Date.now();
+    this.room.storage.put<number>("lastPlayed", Date.now());
   }
 
   //#region Websocket
@@ -88,6 +92,8 @@ export default class Server implements Party.Server {
           player,
         } as PlayerUpdatedMessage),
       );
+
+      this.setLastPlayedDate();
     }
   }
 

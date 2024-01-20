@@ -52,4 +52,6 @@ export async function handleAddPlayer(
     type: "PlayersUpdated",
     avatars: server.getAvatars(),
   });
+
+  server.setLastPlayedDate();
 }

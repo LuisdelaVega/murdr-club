@@ -11,6 +11,7 @@
     "pflannery.vscode-versionlens",
     "streetsidesoftware.code-spell-checker",
     "mgmcdermott.vscode-language-babel",
-    "editorconfig.editorconfig"
+    "editorconfig.editorconfig",
+    "github.vscode-github-actions"
   ]
 }

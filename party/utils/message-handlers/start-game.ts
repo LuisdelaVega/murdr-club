@@ -36,4 +36,5 @@ export function handleStartGame(server: Server) {
   }
 
   server.room.storage.put<Players>("players", server.players);
+  server.setLastPlayedDate();
 }
