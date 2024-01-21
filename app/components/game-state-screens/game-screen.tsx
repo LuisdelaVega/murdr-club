@@ -51,7 +51,7 @@ export function GameScreen({ player }: GameScreenProps) {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center">
-              ⚠️ For your eyes only 👀
+              For your eyes only
             </DrawerTitle>
             <DrawerDescription className="grid grid-cols-2 grid-rows-1">
               <div className="flex flex-col gap-2 items-center">

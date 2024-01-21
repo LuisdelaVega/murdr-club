@@ -36,6 +36,11 @@ export default class Server implements Party.Server {
     }
   }
 
+  //#region Getters
+  getPlayersArray() {
+    return Object.values(this.players);
+  }
+
   getAvatarFromPlayer({ id, image, name, isPartyLeader }: Player): Avatar {
     return {
       id,
@@ -46,19 +51,18 @@ export default class Server implements Party.Server {
   }
 
   getAvatars(): Avatar[] {
-    return Object.values(this.players).map(this.getAvatarFromPlayer);
+    return this.getPlayersArray().map(this.getAvatarFromPlayer);
   }
+  //#endregion
 
+  //#region Setters
   setLastPlayedDate() {
     this.lastPlayed = Date.now();
     this.room.storage.put<number>("lastPlayed", Date.now());
   }
+  //#endregion
 
   //#region Websocket
-  broadcastToRoom<T>(value: T) {
-    this.room.broadcast(JSON.stringify(value));
-  }
-
   async onConnect(
     connection: Party.Connection<unknown>,
     ctx: Party.ConnectionContext,
@@ -112,7 +116,7 @@ export default class Server implements Party.Server {
     disconnectedPlayer.connected = false;
     disconnectedPlayer.isPartyLeader = false;
 
-    const players = Object.values(this.players);
+    const players = this.getPlayersArray();
 
     if (wasPartyLeader) {
       for (const player of players) {
@@ -125,10 +129,12 @@ export default class Server implements Party.Server {
 
     this.room.storage.put<Players>("players", this.players);
 
-    this.broadcastToRoom<PlayersUpdatedMessage>({
-      type: "PlayersUpdated",
-      avatars: this.getAvatars(),
-    });
+    this.room.broadcast(
+      JSON.stringify({
+        type: "PlayersUpdated",
+        avatars: this.getAvatars(),
+      } as PlayersUpdatedMessage),
+    );
   }
 
   async onMessage(

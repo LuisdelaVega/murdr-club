@@ -40,7 +40,7 @@ export async function handleAddPlayer(
 
   server.players[id].connected = true;
 
-  const players = Object.values(server.players);
+  const players = server.getPlayersArray();
 
   if (!players.length || !players.find(({ isPartyLeader }) => isPartyLeader)) {
     server.players[id].isPartyLeader = true;
@@ -48,10 +48,12 @@ export async function handleAddPlayer(
 
   server.room.storage.put<Players>("players", server.players);
 
-  server.broadcastToRoom<PlayersUpdatedMessage>({
-    type: "PlayersUpdated",
-    avatars: server.getAvatars(),
-  });
+  server.room.broadcast(
+    JSON.stringify({
+      type: "PlayersUpdated",
+      avatars: server.getAvatars(),
+    } as PlayersUpdatedMessage),
+  );
 
   server.setLastPlayedDate();
 }

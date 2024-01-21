@@ -9,11 +9,7 @@ import type {
 import { shuffleArray } from "../shuffle-array";
 
 export function handleStartGame(server: Server) {
-  server.gameState = "GameStarted";
-  server.room.storage.put<GameState>("gameState", server.gameState);
-  server.broadcastToRoom<GameSateMessage>({ type: server.gameState });
-
-  const shuffledPlayers = shuffleArray<Player>(Object.values(server.players));
+  const shuffledPlayers = shuffleArray<Player>(server.getPlayersArray());
 
   for (let index = 0; index < shuffledPlayers.length; index++) {
     const player = shuffledPlayers[index];
@@ -37,4 +33,11 @@ export function handleStartGame(server: Server) {
 
   server.room.storage.put<Players>("players", server.players);
   server.setLastPlayedDate();
+
+  // Set and send the gameState
+  server.gameState = "GameStarted";
+  server.room.storage.put<GameState>("gameState", server.gameState);
+  server.room.broadcast(
+    JSON.stringify({ type: server.gameState } as GameSateMessage),
+  );
 }
