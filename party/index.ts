@@ -21,20 +21,17 @@ export default class Server implements Party.Server {
   lastPlayed: number | undefined = undefined;
 
   async onStart(): Promise<void> {
-    if (!(await this.room.storage.get<number>("lastPlayed"))) {
-      this.setLastPlayedDate();
-      return;
-    }
-
     this.lastPlayed = await this.room.storage.get<number>("lastPlayed");
 
-    // Clear the storage after 2 days have passed
-    if (this.lastPlayed && differenceInDays(this.lastPlayed, Date.now()) < 2) {
+    if (!this.lastPlayed) {
+      this.setLastPlayedDate();
+    } else if (differenceInDays(Date.now(), this.lastPlayed) < 2) {
       this.players = (await this.room.storage.get<Players>("players")) ?? {};
       this.gameState =
         (await this.room.storage.get<GameState>("gameState")) ??
         "WaitingForPlayers";
     } else {
+      // Clear the storage after 2 days have passed
       this.room.storage.deleteAll();
     }
   }
