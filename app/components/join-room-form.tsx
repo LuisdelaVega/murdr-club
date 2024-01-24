@@ -1,6 +1,6 @@
 "use client";
 
-import { shortUniqueIdOptions } from "@/utils/constants";
+import { ZOD_STRING, shortUniqueIdOptions } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,14 +20,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-
-const ZOD_STRING = {
-  schema: z
-    .string()
-    .regex(/^[a-zA-Z0-9]*$/, "Only letters and numbers are allowed")
-    .toUpperCase()
-    .trim(),
-};
 
 const formSchema = z.object({
   room: ZOD_STRING.schema.length(shortUniqueIdOptions.length ?? 8),
@@ -79,6 +71,7 @@ export function JoinRoomForm() {
         <Button asChild variant="link" className="underline">
           <Link
             href={`/${storedRoom.current}/${storedName.current}/${storedId.current}`}
+            className="uppercase"
           >
             Click here to join your previous game
           </Link>
@@ -110,8 +103,10 @@ export function JoinRoomForm() {
               >
                 Generate
               </Button>
-              <FormDescription>This is id for the Room.</FormDescription>
-              <FormMessage />
+              <FormDescription className="uppercase">
+                This is the id for the Room.
+              </FormDescription>
+              <FormMessage className="uppercase" />
             </FormItem>
           )}
         />
@@ -130,10 +125,10 @@ export function JoinRoomForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="uppercase">
                 Other players will see this name.
               </FormDescription>
-              <FormMessage />
+              <FormMessage className="uppercase" />
             </FormItem>
           )}
         />

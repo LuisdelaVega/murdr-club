@@ -30,6 +30,7 @@ export function LobbyScreen({
 
       {avatars.length > 1 && isPartyLeader && (
         <Button
+          className="uppercase"
           onClick={(e) => {
             e.preventDefault();
             socket.send(

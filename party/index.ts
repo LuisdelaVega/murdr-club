@@ -153,6 +153,11 @@ export default class Server implements Party.Server {
         handleStartGame(this);
         break;
 
+      case "PlayerKill":
+        // TODO Implement player kill
+        console.log("PlayerKill", data.playerId);
+        break;
+
       default:
         break;
     }

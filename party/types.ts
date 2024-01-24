@@ -46,7 +46,10 @@ export interface PlayerKillMessage {
   playerId: Player["id"];
 }
 
-export type ClientMessage = AddPlayerMessage | StartGameMessage;
+export type ClientMessage =
+  | AddPlayerMessage
+  | StartGameMessage
+  | PlayerKillMessage;
 //#endregion
 
 //#region Server Messages
