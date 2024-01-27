@@ -12,7 +12,6 @@ interface Target extends Avatar {
 
 export interface Player extends Avatar {
   connected: boolean;
-  isAlive: boolean;
   killWords: string[];
   target: Target | undefined;
   victims: Avatar[];

@@ -23,6 +23,7 @@ export function handleStartGame(server: Server) {
       connected: targetPlayer.connected,
     };
 
+    // Send a message to each individual player to let them know their player was updated
     server.room.getConnection(player.id)?.send(
       JSON.stringify({
         type: "PlayerUpdated",

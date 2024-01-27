@@ -6,7 +6,20 @@ interface PlayerAvatarProps {
   displayName?: boolean;
   displayLeaderTag?: boolean;
   isPartyLeader?: boolean;
-  size?: "sm" | "lg";
+  size?: "xs" | "sm" | "lg";
+}
+
+function getAvatarSize(size: PlayerAvatarProps["size"]) {
+  switch (size) {
+    case "xs":
+      return "h-14 w-14";
+
+    case "sm":
+      return "h-20 w-20";
+
+    default:
+      return "h-44 w-44";
+  }
 }
 
 export function PlayerAvatar({
@@ -22,7 +35,7 @@ export function PlayerAvatar({
 
   return (
     <div key={avatar.id} className="flex flex-col items-center gap-1 w-fit">
-      <Avatar className={size === "sm" ? "h-20 w-20" : "h-44 w-44"}>
+      <Avatar className={getAvatarSize(size)}>
         <AvatarImage
           src={avatar.image}
           alt={`Image for player with username: ${avatar.name}`}

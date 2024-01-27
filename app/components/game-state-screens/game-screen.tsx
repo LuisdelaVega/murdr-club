@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import type { Player, PlayerKillMessage } from "party/types";
 import type PartySocket from "partysocket";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { PlayerAvatar } from "../player-avatar";
@@ -57,7 +57,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
   });
 
   function onSubmit({ targetId }: z.infer<typeof formSchema>) {
-    if (targetId === player.target?.id) {
+    if (targetId === player.target?.id || player.target?.id === player.id) {
       socket.send(
         JSON.stringify({
           type: "PlayerKill",
@@ -70,6 +70,12 @@ export function GameScreen({ player, socket }: GameScreenProps) {
       });
     }
   }
+
+  useEffect(() => {
+    setOpenDialog(false);
+  }, [player]);
+
+  // TODO Display "You are dead/Killed by" message
 
   return (
     <div className="flex flex-col gap-10 items-center">
@@ -92,53 +98,75 @@ export function GameScreen({ player, socket }: GameScreenProps) {
       </div>
 
       {/* Secrets Drawer */}
-      <Drawer>
-        <Button asChild>
-          <DrawerTrigger className="uppercase">
-            View Target and Kill Words
-          </DrawerTrigger>
-        </Button>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase">
-              For your eyes only
-            </DrawerTitle>
-            <DrawerDescription className="grid grid-cols-2 grid-rows-1">
-              <div className="flex flex-col gap-2 items-center">
-                <h3 className="uppercase">Target</h3>
-                <PlayerAvatar avatar={player.target!} displayName />
-                <div className="flex gap-2">
-                  <Button
-                    className="w-fit uppercase"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenDialog(true);
-                    }}
-                  >
-                    Kill
-                  </Button>
+      {!player.killedBy && (
+        <Drawer>
+          <Button asChild>
+            <DrawerTrigger className="uppercase">
+              View Target and Kill Words
+            </DrawerTrigger>
+          </Button>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase">
+                For your eyes only
+              </DrawerTitle>
+              <DrawerDescription className="grid grid-cols-2 grid-rows-1">
+                <div className="flex flex-col gap-2 items-center">
+                  <h3 className="uppercase">Target</h3>
+                  <PlayerAvatar avatar={player.target!} displayName />
+                  <div className="flex gap-2">
+                    <Button
+                      className="w-fit uppercase"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpenDialog(true);
+                      }}
+                    >
+                      Kill
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-2 items-center">
-                <h3 className="uppercase">Kill Words</h3>
-                <div className="flex flex-col gap-1 items-center">
-                  {player.killWords.map((word) => (
-                    <span key={word} className="text-lg mt-1 uppercase">
-                      {word}
-                    </span>
-                  ))}
+                <div className="flex flex-col gap-2 items-center">
+                  <h3 className="uppercase">Kill Words</h3>
+                  <div className="flex flex-col gap-1 items-center">
+                    {player.killWords.map((word) => (
+                      <span
+                        key={`${player.victims.length}-${word}`}
+                        className="text-lg mt-1 uppercase"
+                      >
+                        {word}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </DrawerDescription>
-          </DrawerHeader>
-          <DrawerFooter>
-            <Button asChild>
-              <DrawerClose className="uppercase">Close</DrawerClose>
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+              </DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter>
+              <Button asChild>
+                <DrawerClose className="uppercase">Close</DrawerClose>
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      )}
+
+      {/* Victims section */}
+      {player.victims.length > 0 && (
+        <div className="flex flex-col items-center px-4 gap-2">
+          <h2>Victims</h2>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {player.victims.map((victim) => (
+              <PlayerAvatar
+                avatar={victim}
+                key={victim.id}
+                size="xs"
+                displayName
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>

@@ -154,8 +154,36 @@ export default class Server implements Party.Server {
         break;
 
       case "PlayerKill":
-        // TODO Implement player kill
-        console.log("PlayerKill", data.playerId);
+        // Kill the victim
+        const killedPlayer = this.players[data.playerId];
+
+        if (!killedPlayer) {
+          return;
+        }
+
+        killedPlayer.killedBy = this.players[sender.id];
+
+        this.room.getConnection(killedPlayer.id)?.send(
+          JSON.stringify({
+            type: "PlayerUpdated",
+            player: killedPlayer,
+          } as PlayerUpdatedMessage),
+        );
+
+        // Update the killer (player)
+        const player = this.players[sender.id];
+        player.target = killedPlayer.target;
+        player.killWords = killedPlayer.killWords;
+        player.victims.push(this.getAvatarFromPlayer(killedPlayer));
+
+        this.room.getConnection(player.id)?.send(
+          JSON.stringify({
+            type: "PlayerUpdated",
+            player,
+          } as PlayerUpdatedMessage),
+        );
+
+        this.room.storage.put<Players>("players", this.players);
         break;
 
       default:

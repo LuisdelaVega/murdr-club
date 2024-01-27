@@ -31,7 +31,6 @@ export async function handleAddPlayer(
     server.players[id] = {
       ...data.avatar,
       connected: true,
-      isAlive: true,
       killWords: generateKillWords(id),
       target: undefined,
       victims: [],
