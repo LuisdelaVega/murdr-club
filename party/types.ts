@@ -24,10 +24,7 @@ export interface Players {
 //#endregion
 
 //#region Gate State
-type WaitingState = "WaitingForPlayers";
-type StartedState = "GameStarted";
-
-export type GameState = WaitingState | StartedState;
+export type GameState = "WaitingForPlayers" | "GameStarted" | "GameEnded";
 //#endregion
 
 //#region Client Messages
@@ -64,6 +61,7 @@ export interface PlayerUpdatedMessage {
 
 export interface GameSateMessage {
   type: GameState;
+  players?: Player[];
 }
 
 export interface TooLateMessage {

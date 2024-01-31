@@ -11,6 +11,7 @@ import type {
   PlayersUpdatedMessage,
 } from "./types";
 import { handleAddPlayer } from "./utils/message-handlers/add-player";
+import { handlePlayerKill } from "./utils/message-handlers/player-kill";
 import { handleStartGame } from "./utils/message-handlers/start-game";
 
 export default class Server implements Party.Server {
@@ -74,11 +75,16 @@ export default class Server implements Party.Server {
       }`,
     );
 
-    connection.send(
-      JSON.stringify({
-        type: this.gameState,
-      } as GameSateMessage),
-    );
+    const gameStateMsg: GameSateMessage = {
+      type: this.gameState,
+    };
+
+    if (this.gameState === "GameEnded") {
+      gameStateMsg.players = this.getPlayersArray();
+    }
+
+    // Send the GameState
+    connection.send(JSON.stringify(gameStateMsg));
 
     const player = this.players[connection.id];
 
@@ -154,36 +160,7 @@ export default class Server implements Party.Server {
         break;
 
       case "PlayerKill":
-        // Kill the victim
-        const killedPlayer = this.players[data.playerId];
-
-        if (!killedPlayer) {
-          return;
-        }
-
-        killedPlayer.killedBy = this.players[sender.id];
-
-        this.room.getConnection(killedPlayer.id)?.send(
-          JSON.stringify({
-            type: "PlayerUpdated",
-            player: killedPlayer,
-          } as PlayerUpdatedMessage),
-        );
-
-        // Update the killer (player)
-        const player = this.players[sender.id];
-        player.target = killedPlayer.target;
-        player.killWords = killedPlayer.killWords;
-        player.victims.push(this.getAvatarFromPlayer(killedPlayer));
-
-        this.room.getConnection(player.id)?.send(
-          JSON.stringify({
-            type: "PlayerUpdated",
-            player,
-          } as PlayerUpdatedMessage),
-        );
-
-        this.room.storage.put<Players>("players", this.players);
+        handlePlayerKill(this, data, sender);
         break;
 
       default:

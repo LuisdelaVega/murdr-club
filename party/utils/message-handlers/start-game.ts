@@ -32,13 +32,13 @@ export function handleStartGame(server: Server) {
     );
   }
 
-  server.room.storage.put<Players>("players", server.players);
-  server.setLastPlayedDate();
-
   // Set and send the gameState
   server.gameState = "GameStarted";
-  server.room.storage.put<GameState>("gameState", server.gameState);
   server.room.broadcast(
     JSON.stringify({ type: server.gameState } as GameSateMessage),
   );
+
+  server.room.storage.put<GameState>("gameState", server.gameState);
+  server.room.storage.put<Players>("players", server.players);
+  server.setLastPlayedDate();
 }

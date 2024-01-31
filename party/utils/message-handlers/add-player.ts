@@ -18,7 +18,7 @@ export async function handleAddPlayer(
   } = data;
 
   // If the game has already started and a new player is trying to join, don't allow it
-  if (server.gameState === "GameStarted" && !server.players[id]) {
+  if (server.gameState !== "WaitingForPlayers" && !server.players[id]) {
     sender.send(
       JSON.stringify({
         type: "TooLate",

@@ -9,10 +9,45 @@ import {
   type ServerMessage,
 } from "party/types";
 import usePartySocket from "partysocket/react";
-import { useMemo, useState } from "react";
+import { useMemo, useReducer } from "react";
 import { toast } from "sonner";
 import { GameScreen } from "./game-state-screens/game-screen";
 import { LobbyScreen } from "./game-state-screens/lobby-screen";
+
+interface ReducerState {
+  myPlayer: Player | undefined;
+  avatars: Avatar[];
+  allPlayers: Player[] | undefined;
+  gameState: GameState | undefined;
+  tooLate: boolean;
+}
+
+function reducer(state: ReducerState, action: ServerMessage): ReducerState {
+  switch (action.type) {
+    case "PlayersUpdated":
+      return { ...state, avatars: action.avatars };
+
+    case "PlayerUpdated":
+      return { ...state, myPlayer: action.player };
+
+    case "WaitingForPlayers":
+    case "GameStarted":
+      return { ...state, gameState: action.type };
+
+    case "TooLate":
+      return { ...state, tooLate: true };
+
+    case "GameEnded":
+      return {
+        ...state,
+        allPlayers: action.players,
+        gameState: action.type,
+      };
+
+    default:
+      return state;
+  }
+}
 
 interface GameManagerProps {
   room: string;
@@ -20,10 +55,14 @@ interface GameManagerProps {
 }
 
 export function GameManager({ room, avatar }: GameManagerProps) {
-  const [myPlayer, setMyPlayer] = useState<Player>();
-  const [avatars, setAvatars] = useState<Avatar[]>([avatar]);
-  const [gameState, setGameState] = useState<GameState | undefined>();
-  const [tooLate, setTooLate] = useState<boolean>(false);
+  const [{ avatars, myPlayer, allPlayers, gameState, tooLate }, dispatch] =
+    useReducer(reducer, {
+      avatars: [avatar],
+      tooLate: false,
+      allPlayers: undefined,
+      gameState: undefined,
+      myPlayer: undefined,
+    });
 
   const myAvatar = useMemo(
     () => avatars.find(({ id }) => avatar.id === id),
@@ -44,43 +83,16 @@ export function GameManager({ room, avatar }: GameManagerProps) {
       );
     },
     onMessage(message) {
-      const data = JSON.parse(message.data) as ServerMessage;
-
-      switch (data.type) {
-        case "PlayersUpdated":
-          setAvatars(data.avatars);
-          break;
-
-        case "PlayerUpdated":
-          setMyPlayer(data.player);
-          break;
-
-        case "WaitingForPlayers":
-        case "GameStarted":
-          setGameState(data.type);
-          break;
-
-        case "TooLate":
-          toast.warning("You're too late! This game has already started 😓");
-          setTooLate(true);
-          break;
-
-        default:
-          break;
-      }
+      dispatch(JSON.parse(message.data) as ServerMessage);
     },
   });
 
   if (tooLate) {
+    toast.warning("You're too late! This game has already started 😓");
     return "Game already started 😓";
   }
 
   switch (gameState) {
-    case "GameStarted":
-      if (myPlayer) {
-        return <GameScreen player={myPlayer} socket={socket} />;
-      }
-
     case "WaitingForPlayers":
       if (myAvatar) {
         return (
@@ -89,6 +101,32 @@ export function GameManager({ room, avatar }: GameManagerProps) {
             socket={socket}
             isPartyLeader={myAvatar.isPartyLeader}
           />
+        );
+      }
+
+    case "GameStarted":
+      if (myPlayer) {
+        return <GameScreen player={myPlayer} socket={socket} />;
+      }
+
+    case "GameEnded":
+      if (allPlayers) {
+        // TODO Create the GameEnded screen
+        return (
+          <div>
+            Game has ended
+            <pre className="break-words">
+              {JSON.stringify(
+                allPlayers.map(({ id, name, victims }) => ({
+                  id,
+                  name,
+                  victims: victims.map(({ id, name }) => ({ id, name })),
+                })),
+                null,
+                2,
+              )}
+            </pre>
+          </div>
         );
       }
 

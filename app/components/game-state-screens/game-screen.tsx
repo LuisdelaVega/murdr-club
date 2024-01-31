@@ -19,7 +19,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -64,6 +63,8 @@ export function GameScreen({ player, socket }: GameScreenProps) {
           playerId: player.target.id,
         } as PlayerKillMessage),
       );
+      form.clearErrors();
+      form.reset();
     } else {
       form.setError("targetId", {
         message: "The ID you entered doesn't match your target's ID.",
@@ -75,11 +76,10 @@ export function GameScreen({ player, socket }: GameScreenProps) {
     setOpenDialog(false);
   }, [player]);
 
-  // TODO Display "You are dead/Killed by" message
-
   return (
-    <div className="flex flex-col gap-10 items-center">
+    <div className="flex flex-col gap-8 items-center">
       <div className="flex flex-col gap-1 items-center">
+        {player.killedBy && <h2>You are dead!</h2>}
         <PlayerAvatar avatar={player} displayName size="lg" />
         <span
           onClick={(e) => {
@@ -97,6 +97,14 @@ export function GameScreen({ player, socket }: GameScreenProps) {
         </span>
       </div>
 
+      {/* Killed By: */}
+      {player.killedBy && (
+        <div className="flex flex-col items-center">
+          <h4>Killed by:</h4>
+          <PlayerAvatar avatar={player.killedBy} size="xs" displayName />
+        </div>
+      )}
+
       {/* Secrets Drawer */}
       {!player.killedBy && (
         <Drawer>
@@ -110,7 +118,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
               <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase">
                 For your eyes only
               </DrawerTitle>
-              <DrawerDescription className="grid grid-cols-2 grid-rows-1">
+              <div className="grid grid-cols-2 grid-rows-1">
                 <div className="flex flex-col gap-2 items-center">
                   <h3 className="uppercase">Target</h3>
                   <PlayerAvatar avatar={player.target!} displayName />
@@ -140,7 +148,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
                     ))}
                   </div>
                 </div>
-              </DrawerDescription>
+              </div>
             </DrawerHeader>
             <DrawerFooter>
               <Button asChild>
@@ -154,7 +162,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
       {/* Victims section */}
       {player.victims.length > 0 && (
         <div className="flex flex-col items-center px-4 gap-2">
-          <h2>Victims</h2>
+          <h4>Victims:</h4>
           <div className="flex flex-wrap items-center justify-center gap-4">
             {player.victims.map((victim) => (
               <PlayerAvatar
