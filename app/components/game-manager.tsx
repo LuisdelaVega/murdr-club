@@ -1,6 +1,7 @@
 "use client";
 
 import { PARTYKIT_HOST } from "@/env";
+import { PartyPopper } from "lucide-react";
 import {
   type AddPlayerMessage,
   type Avatar,
@@ -9,7 +10,7 @@ import {
   type ServerMessage,
 } from "party/types";
 import usePartySocket from "partysocket/react";
-import { useMemo, useReducer } from "react";
+import { useMemo, useReducer, useRef } from "react";
 import { toast } from "sonner";
 import { GameScreen } from "./game-state-screens/game-screen";
 import { LobbyScreen } from "./game-state-screens/lobby-screen";
@@ -55,6 +56,7 @@ interface GameManagerProps {
 }
 
 export function GameManager({ room, avatar }: GameManagerProps) {
+  const sendWelcomeMessageRef = useRef<boolean>(true);
   const [{ avatars, myPlayer, allPlayers, gameState, tooLate }, dispatch] =
     useReducer(reducer, {
       avatars: [avatar],
@@ -88,8 +90,19 @@ export function GameManager({ room, avatar }: GameManagerProps) {
   });
 
   if (tooLate) {
+    // TODO Redirect the user to a TooLate page
     toast.warning("You're too late! This game has already started 😓");
     return "Game already started 😓";
+  }
+
+  if (sendWelcomeMessageRef.current) {
+    toast.success(
+      <>
+        <PartyPopper className="w-4 h-4 mr-2" />
+        <span className="uppercase">Welcome to the room</span>
+      </>,
+    );
+    sendWelcomeMessageRef.current = false;
   }
 
   switch (gameState) {

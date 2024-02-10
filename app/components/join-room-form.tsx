@@ -2,6 +2,7 @@
 
 import { ZOD_STRING, shortUniqueIdOptions } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dices, Hourglass, Swords } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
@@ -44,10 +45,6 @@ export function JoinRoomForm() {
     },
   });
 
-  function navigateToRoom(room: string, name: string, id: string) {
-    router.push(`/${room}/${name}/${id}`);
-  }
-
   function onSubmit({ room, name }: z.infer<typeof formSchema>) {
     let id = uid.rnd();
 
@@ -60,9 +57,15 @@ export function JoinRoomForm() {
       localStorage.setItem("murdr-club-id", id);
     }
 
-    toast.info("Attempting to join the Room");
+    toast.info(
+      <>
+        <Hourglass className="w-4 h-4 mr-2 animate-spin" />
+        <span className="uppercase">Joining the room</span>
+      </>,
+    );
 
-    navigateToRoom(room, name, id);
+    // Navigate to the Room
+    router.push(`/${room}/${name}/${id}`);
   }
 
   return (
@@ -101,6 +104,7 @@ export function JoinRoomForm() {
                   field.onChange(uid.rnd());
                 }}
               >
+                <Dices className="w-4 h-4 mr-2" />
                 Generate
               </Button>
               <FormDescription className="uppercase">
@@ -134,6 +138,7 @@ export function JoinRoomForm() {
         />
 
         <Button type="submit" className="uppercase">
+          <Swords className="w-4 h-4 mr-2" />
           Play
         </Button>
       </form>
