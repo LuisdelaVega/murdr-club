@@ -1,7 +1,7 @@
+import { Button } from "@/components/ui/button";
 import { type Avatar, type StartGameMessage } from "party/types";
 import type PartySocket from "partysocket";
 import { PlayerAvatar } from "../player-avatar";
-import { Button } from "../ui/button";
 
 interface LobbyScreenProps {
   avatars: Avatar[];

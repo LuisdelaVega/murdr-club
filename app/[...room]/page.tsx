@@ -1,4 +1,4 @@
-import { GameManager } from "@/components/game-manager";
+import { GameManager } from "@/[...room]/components/game-manager";
 import { lorelei } from "@dicebear/collection";
 import { createAvatar, type Options } from "@dicebear/core";
 import { faker } from "@faker-js/faker";
@@ -22,7 +22,7 @@ export default async function GamePage({ params }: GamePageProps) {
     backgroundType: ["solid"],
   };
 
-  if (faker.number.int({ min: 0, max: 100 }) < 10) {
+  if (faker.number.int({ min: 1, max: 100 }) < 10) {
     avatarOptions.backgroundColor!.push(faker.color.rgb().substring(1));
     avatarOptions.backgroundType![0] = "gradientLinear";
   }

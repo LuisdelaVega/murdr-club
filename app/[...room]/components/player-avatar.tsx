@@ -1,6 +1,6 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Crown } from "lucide-react";
 import { type Avatar as TAvatar } from "party/types";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface PlayerAvatarProps {
   avatar: TAvatar;

@@ -56,7 +56,7 @@ interface GameManagerProps {
 }
 
 export function GameManager({ room, avatar }: GameManagerProps) {
-  const sendWelcomeMessageRef = useRef<boolean>(true);
+  const displayWelcomeMessageRef = useRef<boolean>(true);
   const [{ avatars, myPlayer, allPlayers, gameState, tooLate }, dispatch] =
     useReducer(reducer, {
       avatars: [avatar],
@@ -95,14 +95,14 @@ export function GameManager({ room, avatar }: GameManagerProps) {
     return "Game already started 😓";
   }
 
-  if (sendWelcomeMessageRef.current) {
+  if (displayWelcomeMessageRef.current) {
     toast.success(
       <>
         <PartyPopper className="w-4 h-4 mr-2" />
         <span className="uppercase">Welcome to the room</span>
       </>,
     );
-    sendWelcomeMessageRef.current = false;
+    displayWelcomeMessageRef.current = false;
   }
 
   switch (gameState) {
@@ -144,6 +144,7 @@ export function GameManager({ room, avatar }: GameManagerProps) {
       }
 
     default:
+      // TODO Create WaitingForServer component
       return "Waiting for server...";
   }
 }
