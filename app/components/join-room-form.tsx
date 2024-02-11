@@ -23,8 +23,12 @@ import {
 import { Input } from "./ui/input";
 
 const formSchema = z.object({
-  room: ZOD_STRING.schema.length(shortUniqueIdOptions.length ?? 8),
-  name: ZOD_STRING.schema.min(2).max(16),
+  room: ZOD_STRING.schema.length(shortUniqueIdOptions.length!, {
+    message: `Must be ${shortUniqueIdOptions.length} characters`,
+  }),
+  name: ZOD_STRING.schema
+    .min(2, { message: "Too short! 2 characters min." })
+    .max(16, { message: "Too long! 16 characters max." }),
 });
 
 export function JoinRoomForm() {
@@ -89,24 +93,25 @@ export function JoinRoomForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="uppercase">Room Id</FormLabel>
-              <FormControl>
-                <Input
+              <div className="flex gap-2">
+                <FormControl>
+                  <Input
+                    className="uppercase"
+                    placeholder={`Enter ${shortUniqueIdOptions.length}-Character Code`}
+                    {...field}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
                   className="uppercase"
-                  placeholder={`Enter ${shortUniqueIdOptions.length}-Character Code`}
-                  {...field}
-                />
-              </FormControl>
-              <Button
-                type="button"
-                className="uppercase"
-                onClick={(e) => {
-                  e.preventDefault();
-                  field.onChange(uid.rnd());
-                }}
-              >
-                <Dices className="w-4 h-4 mr-2" />
-                Generate
-              </Button>
+                  onClick={(e) => {
+                    e.preventDefault();
+                    field.onChange(uid.rnd());
+                  }}
+                >
+                  <Dices />
+                </Button>
+              </div>
               <FormDescription className="uppercase">
                 This is the id for the Room.
               </FormDescription>
@@ -137,9 +142,9 @@ export function JoinRoomForm() {
           )}
         />
 
-        <Button type="submit" className="uppercase">
+        <Button type="submit" className="uppercase float-right">
           <Swords className="w-4 h-4 mr-2" />
-          Play
+          Join Room
         </Button>
       </form>
     </Form>

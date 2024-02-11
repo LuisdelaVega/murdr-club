@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Swords } from "lucide-react";
 import { type Avatar, type StartGameMessage } from "party/types";
 import type PartySocket from "partysocket";
 import { PlayerAvatar } from "../player-avatar";
@@ -38,6 +39,7 @@ export function LobbyScreen({
             );
           }}
         >
+          <Swords className="w-4 h-4 mr-2" />
           Start game
         </Button>
       )}

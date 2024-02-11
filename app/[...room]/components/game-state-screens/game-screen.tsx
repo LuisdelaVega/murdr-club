@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ZOD_STRING, shortUniqueIdOptions } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Fingerprint, ShieldAlert, Skull } from "lucide-react";
 import type { Player, PlayerKillMessage } from "party/types";
 import type PartySocket from "partysocket";
 import { useEffect, useState } from "react";
@@ -110,13 +110,16 @@ export function GameScreen({ player, socket }: GameScreenProps) {
         <Drawer>
           <Button asChild>
             <DrawerTrigger className="uppercase">
-              View Target and Kill Words
+              <Fingerprint className="w-4 h-4 mr-2" />
+              Mission info
             </DrawerTrigger>
           </Button>
           <DrawerContent>
             <DrawerHeader>
-              <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase">
-                For your eyes only
+              <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase flex  justify-center items-center gap-2">
+                <Fingerprint className="w-8 h-8" />
+                Secret
+                <ShieldAlert className="w-8 h-8" />
               </DrawerTitle>
               <div className="grid grid-cols-2 grid-rows-1">
                 <div className="flex flex-col gap-2 items-center">
@@ -130,6 +133,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
                         setOpenDialog(true);
                       }}
                     >
+                      <Skull className="w-4 h-4 mr-2" />
                       Kill
                     </Button>
                   </div>
@@ -209,6 +213,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
               />
 
               <Button type="submit" className="uppercase w-full">
+                <Skull className="w-4 h-4 mr-2" />
                 Kill
               </Button>
             </form>
