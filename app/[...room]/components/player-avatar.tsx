@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { Crown } from "lucide-react";
 import { type Avatar as TAvatar } from "party/types";
 
@@ -48,7 +49,12 @@ export function PlayerAvatar({
         <div className="flex gap-2 items-center">
           <span className={size === "lg" ? "text-4xl" : ""}>{avatar.name}</span>
           {displayLeaderTag && isPartyLeader ? (
-            <Crown className="w-4 h-4 text-yellow-500" />
+            <Crown
+              className={cn(
+                "w-4 h-4 text-yellow-500",
+                size === "lg" && "w-8 h-8",
+              )}
+            />
           ) : null}
         </div>
       )}

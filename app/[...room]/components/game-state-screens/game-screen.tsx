@@ -49,6 +49,8 @@ export function GameScreen({ player, socket }: GameScreenProps) {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
     resolver: zodResolver(formSchema),
     defaultValues: {
       targetId: "",
@@ -57,14 +59,17 @@ export function GameScreen({ player, socket }: GameScreenProps) {
 
   function onSubmit({ targetId }: z.infer<typeof formSchema>) {
     if (targetId === player.target?.id || player.target?.id === player.id) {
+      form.clearErrors("targetId");
+      form.reset({
+        targetId: "",
+      });
+
       socket.send(
         JSON.stringify({
           type: "PlayerKill",
           playerId: player.target.id,
         } as PlayerKillMessage),
       );
-      form.clearErrors();
-      form.reset();
     } else {
       form.setError("targetId", {
         message: "The ID you entered doesn't match your target's ID.",
@@ -170,8 +175,8 @@ export function GameScreen({ player, socket }: GameScreenProps) {
           <div className="flex flex-wrap items-center justify-center gap-4">
             {player.victims.map((victim) => (
               <PlayerAvatar
-                avatar={victim}
                 key={victim.id}
+                avatar={victim}
                 size="xs"
                 displayName
               />

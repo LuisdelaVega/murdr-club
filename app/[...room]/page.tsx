@@ -38,7 +38,7 @@ export default async function GamePage({ params }: GamePageProps) {
 
   return (
     <section className="h-[100dvh] grid grid-rows-[min-content_1fr] gap-10">
-      <h2 className="text-center border-b bg-emerald-700">{room}</h2>
+      <h2 className="text-center border-b bg-emerald-700 uppercase">{room}</h2>
       <GameManager avatar={player} room={room} />
     </section>
   );
