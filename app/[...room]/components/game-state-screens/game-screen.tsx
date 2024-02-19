@@ -118,7 +118,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
             <DrawerHeader>
               <DrawerTitle className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 text-center uppercase flex  justify-center items-center gap-2">
                 <Fingerprint className="w-8 h-8" />
-                Secret
+                Top Secret
                 <ShieldAlert className="w-8 h-8" />
               </DrawerTitle>
               <div className="grid grid-cols-2 grid-rows-1">
@@ -134,7 +134,7 @@ export function GameScreen({ player, socket }: GameScreenProps) {
                       }}
                     >
                       <Skull className="w-4 h-4 mr-2" />
-                      Kill
+                      Confirm Kill
                     </Button>
                   </div>
                 </div>

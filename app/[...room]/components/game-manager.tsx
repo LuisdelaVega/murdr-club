@@ -12,6 +12,7 @@ import {
 import usePartySocket from "partysocket/react";
 import { useMemo, useReducer, useRef } from "react";
 import { toast } from "sonner";
+import { GameEndedScreen } from "./game-state-screens/game-ended-screen";
 import { GameScreen } from "./game-state-screens/game-screen";
 import { LobbyScreen } from "./game-state-screens/lobby-screen";
 
@@ -124,23 +125,7 @@ export function GameManager({ room, avatar }: GameManagerProps) {
 
     case "GameEnded":
       if (allPlayers) {
-        // TODO Create the GameEnded screen
-        return (
-          <div>
-            Game has ended
-            <pre className="break-words">
-              {JSON.stringify(
-                allPlayers.map(({ id, name, victims }) => ({
-                  id,
-                  name,
-                  victims: victims.map(({ id, name }) => ({ id, name })),
-                })),
-                null,
-                2,
-              )}
-            </pre>
-          </div>
-        );
+        return <GameEndedScreen players={allPlayers} />;
       }
 
     default:

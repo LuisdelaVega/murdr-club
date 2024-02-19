@@ -13,14 +13,13 @@ export function handleStartGame(server: Server) {
 
   for (let index = 0; index < shuffledPlayers.length; index++) {
     const player = shuffledPlayers[index];
-    const targetPlayer =
-      shuffledPlayers[index === shuffledPlayers.length - 1 ? 0 : index + 1];
+    const target = shuffledPlayers[(index + 1) % shuffledPlayers.length];
 
     player.target = {
-      id: targetPlayer.id,
-      image: targetPlayer.image,
-      name: targetPlayer.name,
-      connected: targetPlayer.connected,
+      id: target.id,
+      image: target.image,
+      name: target.name,
+      connected: target.connected,
     };
 
     // Send a message to each individual player to let them know their player was updated
