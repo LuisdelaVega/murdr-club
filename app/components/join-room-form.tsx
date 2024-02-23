@@ -64,7 +64,7 @@ export function JoinRoomForm() {
     toast.info(
       <>
         <Hourglass className="w-4 h-4 mr-2 animate-spin" />
-        <span className="uppercase">Joining the room</span>
+        <span>Joining the room</span>
       </>,
     );
 
@@ -73,80 +73,76 @@ export function JoinRoomForm() {
   }
 
   return (
-    <Form {...form}>
-      {storedRoom.current && storedName.current && storedId.current && (
-        <Button asChild variant="link" className="underline">
-          <Link
-            href={`/${storedRoom.current}/${storedName.current}/${storedId.current}`}
-            className="uppercase"
-          >
-            Click here to join your previous game
-          </Link>
-        </Button>
-      )}
+    <div>
+      <Form {...form}>
+        {storedRoom.current && storedName.current && storedId.current && (
+          <Button asChild variant="link" className="underline">
+            <Link
+              href={`/${storedRoom.current}/${storedName.current}/${storedId.current}`}
+            >
+              Click here to join your previous game
+            </Link>
+          </Button>
+        )}
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Room ID */}
-        <FormField
-          control={form.control}
-          name="room"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="uppercase">Room Id</FormLabel>
-              <div className="flex gap-2">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 p-6 bg-slate-100 rounded-sm"
+        >
+          {/* Room ID */}
+          <FormField
+            control={form.control}
+            name="room"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Room Id</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      placeholder={`Enter ${shortUniqueIdOptions.length}-Character Code`}
+                      {...field}
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      field.onChange(uid.rnd());
+                    }}
+                  >
+                    <Dices />
+                  </Button>
+                </div>
+                <FormDescription>This is the id for the Room.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* name */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input
-                    className="uppercase"
-                    placeholder={`Enter ${shortUniqueIdOptions.length}-Character Code`}
-                    {...field}
-                  />
+                  <Input placeholder="Enter your name" {...field} />
                 </FormControl>
-                <Button
-                  type="button"
-                  className="uppercase"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    field.onChange(uid.rnd());
-                  }}
-                >
-                  <Dices />
-                </Button>
-              </div>
-              <FormDescription className="uppercase">
-                This is the id for the Room.
-              </FormDescription>
-              <FormMessage className="uppercase" />
-            </FormItem>
-          )}
-        />
+                <FormDescription>
+                  Other players will see this name.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* name */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="uppercase">Name</FormLabel>
-              <FormControl>
-                <Input
-                  className="uppercase"
-                  placeholder="Enter your name"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription className="uppercase">
-                Other players will see this name.
-              </FormDescription>
-              <FormMessage className="uppercase" />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="uppercase float-right">
-          <Swords className="w-4 h-4 mr-2" />
-          Join Room
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" className="w-full text-center">
+            <Swords className="w-4 h-4 mr-2 uppercase" />
+            Join Room
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

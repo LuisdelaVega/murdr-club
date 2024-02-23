@@ -51,12 +51,12 @@ function reducer(state: ReducerState, action: ServerMessage): ReducerState {
   }
 }
 
-interface GameManagerProps {
+interface Props {
   room: string;
   avatar: Avatar;
 }
 
-export function GameManager({ room, avatar }: GameManagerProps) {
+export function GameManager({ room, avatar }: Props) {
   const displayWelcomeMessageRef = useRef<boolean>(true);
   const [{ avatars, myPlayer, allPlayers, gameState, tooLate }, dispatch] =
     useReducer(reducer, {
@@ -100,7 +100,7 @@ export function GameManager({ room, avatar }: GameManagerProps) {
     toast.success(
       <>
         <PartyPopper className="w-4 h-4 mr-2" />
-        <span className="uppercase">Welcome to the room</span>
+        <span>Welcome to the room</span>
       </>,
     );
     displayWelcomeMessageRef.current = false;

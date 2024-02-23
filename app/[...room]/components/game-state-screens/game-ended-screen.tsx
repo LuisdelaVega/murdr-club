@@ -1,11 +1,11 @@
 import type { Player } from "party/types";
 import { PlayerAvatar } from "../player-avatar";
 
-interface GameEndedScreenProps {
+interface Props {
   players: Player[];
 }
 
-export function GameEndedScreen({ players }: GameEndedScreenProps) {
+export function GameEndedScreen({ players }: Props) {
   const playersCopy = [...players];
   const indexOfWinner = playersCopy.findIndex((player) => !player.killedBy);
   // Get the winner (inside of an array)

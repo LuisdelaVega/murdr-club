@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Crown } from "lucide-react";
 import { type Avatar as TAvatar } from "party/types";
 
-interface PlayerAvatarProps {
+interface Props {
   avatar: TAvatar;
   displayName?: boolean;
   displayLeaderTag?: boolean;
@@ -11,7 +11,7 @@ interface PlayerAvatarProps {
   size?: "xs" | "sm" | "lg";
 }
 
-function getAvatarSize(size: PlayerAvatarProps["size"]) {
+function getAvatarSize(size: Props["size"]) {
   switch (size) {
     case "xs":
       return "h-14 w-14";
@@ -30,7 +30,7 @@ export function PlayerAvatar({
   displayLeaderTag = false,
   isPartyLeader = false,
   size = "sm",
-}: PlayerAvatarProps) {
+}: Props) {
   if (!avatar) {
     return null;
   }
@@ -42,7 +42,7 @@ export function PlayerAvatar({
           src={avatar.image}
           alt={`Image for player with username: ${avatar.name}`}
         />
-        <AvatarFallback>{`${avatar.name[0].toUpperCase()}`}</AvatarFallback>
+        <AvatarFallback>{`${avatar.name[0]}`}</AvatarFallback>
       </Avatar>
 
       {displayName && (

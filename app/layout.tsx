@@ -5,7 +5,10 @@ import { Toaster } from "./components/ui/sonner";
 import "./globals.css";
 import { cn } from "./lib/utils";
 
-const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "Murdr Club",
