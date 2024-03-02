@@ -1,14 +1,14 @@
 "use client";
 
 import { PARTYKIT_HOST } from "@/env";
+import type {
+  AddPlayerMessage,
+  Avatar,
+  GameState,
+  Player,
+  ServerMessage,
+} from "common/types";
 import { PartyPopper } from "lucide-react";
-import {
-  type AddPlayerMessage,
-  type Avatar,
-  type GameState,
-  type Player,
-  type ServerMessage,
-} from "party/types";
 import usePartySocket from "partysocket/react";
 import { useMemo, useReducer, useRef } from "react";
 import { toast } from "sonner";
@@ -106,6 +106,7 @@ export function GameManager({ room, avatar }: Props) {
     displayWelcomeMessageRef.current = false;
   }
 
+  // Return the appropriate screen
   switch (gameState) {
     case "WaitingForPlayers":
       if (myAvatar) {

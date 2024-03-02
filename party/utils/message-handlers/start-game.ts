@@ -1,11 +1,11 @@
-import Server from "party";
 import type {
   GameSateMessage,
   GameState,
   Player,
   PlayerUpdatedMessage,
   Players,
-} from "party/types";
+} from "common/types";
+import Server from "party";
 import { shuffleArray } from "../shuffle-array";
 
 export function handleStartGame(server: Server) {

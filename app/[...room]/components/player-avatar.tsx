@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import type { Avatar as IAvatar } from "common/types";
 import { Crown } from "lucide-react";
-import { type Avatar as TAvatar } from "party/types";
 
 interface Props {
-  avatar: TAvatar;
+  avatar: IAvatar;
   displayName?: boolean;
   displayLeaderTag?: boolean;
   isPartyLeader?: boolean;

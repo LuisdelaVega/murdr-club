@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
+import type { Avatar, StartGameMessage } from "common/types";
 import { Swords } from "lucide-react";
-import { type Avatar, type StartGameMessage } from "party/types";
 import type PartySocket from "partysocket";
 import { PlayerAvatar } from "../player-avatar";
 

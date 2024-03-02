@@ -1,5 +1,5 @@
 import { ShortUniqueIdOptions } from "short-unique-id";
-import * as z from "zod";
+import { z } from "zod";
 
 export const shortUniqueIdOptions: Partial<ShortUniqueIdOptions> = {
   dictionary: "alphanum_upper",

@@ -1,5 +1,3 @@
-import { differenceInDays } from "date-fns";
-import * as Party from "partykit/server";
 import type {
   Avatar,
   ClientMessage,
@@ -9,7 +7,9 @@ import type {
   PlayerUpdatedMessage,
   Players,
   PlayersUpdatedMessage,
-} from "./types";
+} from "common/types";
+import { differenceInDays } from "date-fns";
+import * as Party from "partykit/server";
 import { handleAddPlayer } from "./utils/message-handlers/add-player";
 import { handlePlayerKill } from "./utils/message-handlers/player-kill";
 import { handleStartGame } from "./utils/message-handlers/start-game";

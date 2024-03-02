@@ -1,10 +1,10 @@
-import Server from "party";
 import type {
   AddPlayerMessage,
   Players,
   PlayersUpdatedMessage,
   TooLateMessage,
-} from "party/types";
+} from "common/types";
+import Server from "party";
 import * as Party from "partykit/server";
 import { generateKillWords } from "../generate-kill-words";
 

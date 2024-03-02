@@ -1,4 +1,4 @@
-import type { Player } from "party/types";
+import type { Player } from "common/types";
 import { PlayerAvatar } from "../player-avatar";
 
 interface Props {
@@ -16,8 +16,10 @@ export function GameEndedScreen({ players }: Props) {
   const sortedPlayers = winnerArr.concat(playersCopy);
 
   return (
-    <div className="flex flex-col items-center gap-8 pb-10 px-8">
-      <h1 className="border-b-2 border-slate-200">Game over</h1>
+    <div className="flex flex-col items-center gap-8 px-8">
+      <h1 className="border-b-2 border-slate-200 w-full text-center">
+        Game over
+      </h1>
       {sortedPlayers.map((player, i) => (
         <div
           key={player.id}

@@ -1,9 +1,9 @@
 import { ZOD_STRING, shortUniqueIdOptions } from "@/utils/constants";
+import type { Player } from "common/types";
 import { Eye, EyeOff } from "lucide-react";
-import type { Player } from "party/types";
 import type PartySocket from "partysocket";
 import { useState } from "react";
-import * as z from "zod";
+import { z } from "zod";
 import { PlayerAvatar } from "../../player-avatar";
 import { SecretsDrawer } from "./components/secrets-drawer";
 

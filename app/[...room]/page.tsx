@@ -3,7 +3,7 @@ import { Header } from "@/components/header/header";
 import { lorelei } from "@dicebear/collection";
 import { createAvatar, type Options } from "@dicebear/core";
 import { faker } from "@faker-js/faker";
-import { type Avatar } from "party/types";
+import type { Avatar } from "common/types";
 import { getSeedFromId } from "party/utils/get-seed-from-id";
 
 interface Props {
@@ -38,9 +38,11 @@ export default async function GamePage({ params }: Props) {
   };
 
   return (
-    <section className="h-[100dvh] grid grid-rows-[min-content_1fr] gap-10">
+    <>
       <Header room={room} />
-      <GameManager avatar={player} room={room} />
-    </section>
+      <section className="mt-12 pb-10">
+        <GameManager avatar={player} room={room} />
+      </section>
+    </>
   );
 }

@@ -9,8 +9,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import type { Player } from "common/types";
 import { Fingerprint, ShieldAlert, Skull } from "lucide-react";
-import type { Player } from "party/types";
 import type PartySocket from "partysocket";
 import { useEffect, useState } from "react";
 import { ConfirmKillDialog } from "./confirm-kill-dialog";

@@ -4,6 +4,10 @@ interface Props {
 
 export function Header({ room }: Props) {
   return (
-    <h2 className="text-center bg-emerald-700 h-10">{room || "Murdr Club"}</h2>
+    <div className="h-12 bg-teal-600 flex items-center justify-center sticky top-0 z-50">
+      <h2 className="text-center italic font-extrabold pb-0">
+        {room || "Murdr.Club"}
+      </h2>
+    </div>
   );
 }

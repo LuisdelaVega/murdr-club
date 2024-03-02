@@ -1,11 +1,11 @@
-import Server from "party";
 import type {
   GameSateMessage,
   GameState,
   PlayerKillMessage,
   PlayerUpdatedMessage,
   Players,
-} from "party/types";
+} from "common/types";
+import Server from "party";
 import * as Party from "partykit/server";
 
 export async function handlePlayerKill(
