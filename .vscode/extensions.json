@@ -2,7 +2,6 @@
   "recommendations": [
     "irongeek.vscode-env",
     "dbaeumer.vscode-eslint",
-    "wix.vscode-import-cost",
     "davidanson.vscode-markdownlint",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",

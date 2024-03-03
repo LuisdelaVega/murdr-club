@@ -32,6 +32,7 @@ const formSchema = z.object({
 });
 
 export function JoinRoomForm() {
+  const disableSubmit = useRef(false);
   const router = useRouter();
 
   // Get the values from localStorage
@@ -50,6 +51,7 @@ export function JoinRoomForm() {
   });
 
   function onSubmit({ room, name }: z.infer<typeof formSchema>) {
+    disableSubmit.current = true;
     let id = uid.rnd();
 
     if (storedRoom.current === room && storedName.current === name) {
@@ -137,7 +139,11 @@ export function JoinRoomForm() {
             )}
           />
 
-          <Button type="submit" className="w-full text-center">
+          <Button
+            type="submit"
+            className="w-full text-center"
+            disabled={disableSubmit.current}
+          >
             <Swords className="w-4 h-4 mr-2 uppercase" />
             Join Room
           </Button>
