@@ -144,7 +144,7 @@ export function JoinRoomForm() {
             className="w-full text-center"
             disabled={disableSubmit.current}
           >
-            <Swords className="w-4 h-4 mr-2 uppercase" />
+            <Swords className="w-4 h-4 mr-2" />
             Join Room
           </Button>
         </form>

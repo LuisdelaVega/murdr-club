@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { GameEndedScreen } from "./game-state-screens/game-ended-screen";
 import { GameScreen } from "./game-state-screens/game-screen";
 import { LobbyScreen } from "./game-state-screens/lobby-screen";
+import { TooLate } from "./game-state-screens/too-late-screen";
 
 interface ReducerState {
   myPlayer: Player | undefined;
@@ -37,7 +38,7 @@ function reducer(state: ReducerState, action: ServerMessage): ReducerState {
       return { ...state, gameState: action.type };
 
     case "TooLate":
-      return { ...state, tooLate: true };
+      return { ...state, tooLate: true, avatars: action.avatars };
 
     case "GameEnded":
       return {
@@ -67,6 +68,11 @@ export function GameManager({ room, avatar }: Props) {
       myPlayer: undefined,
     });
 
+  /**
+   * We need to check every time the avatars change in case
+   * our own avatar changes. Specifically the value of the
+   * `isPartyLeader` parameter.
+   */
   const myAvatar = useMemo(
     () => avatars.find(({ id }) => avatar.id === id),
     [avatar.id, avatars],
@@ -91,19 +97,17 @@ export function GameManager({ room, avatar }: Props) {
   });
 
   if (tooLate) {
-    // TODO Redirect the user to a TooLate page
-    toast.warning("You're too late! This game has already started 😓");
-    return "Game already started 😓";
+    return <TooLate avatars={avatars} />;
   }
 
   if (displayWelcomeMessageRef.current) {
+    displayWelcomeMessageRef.current = false;
     toast.success(
       <>
         <PartyPopper className="w-4 h-4 mr-2" />
         <span>Welcome to the room</span>
       </>,
     );
-    displayWelcomeMessageRef.current = false;
   }
 
   // Return the appropriate screen

@@ -66,6 +66,7 @@ export interface GameSateMessage {
 
 export interface TooLateMessage {
   type: "TooLate";
+  avatars: Avatar[];
 }
 
 export type ServerMessage =

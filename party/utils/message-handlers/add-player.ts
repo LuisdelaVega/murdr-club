@@ -22,6 +22,7 @@ export async function handleAddPlayer(
     sender.send(
       JSON.stringify({
         type: "TooLate",
+        avatars: server.getAvatars(),
       } as TooLateMessage),
     );
     return;
