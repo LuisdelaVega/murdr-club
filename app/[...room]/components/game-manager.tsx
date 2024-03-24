@@ -8,7 +8,7 @@ import type {
   Player,
   ServerMessage,
 } from "common/types";
-import { PartyPopper } from "lucide-react";
+import { Loader, PartyPopper } from "lucide-react";
 import usePartySocket from "partysocket/react";
 import { useMemo, useReducer, useRef } from "react";
 import { toast } from "sonner";
@@ -134,7 +134,11 @@ export function GameManager({ room, avatar }: Props) {
       }
 
     default:
-      // TODO Create WaitingForServer component
-      return "Waiting for server...";
+      return (
+        <div className="flex flex-col justify-center align-middle items-center gap-4">
+          <Loader className="animate-spin h-8 w-8" />
+          <span>Loading...</span>
+        </div>
+      );
   }
 }

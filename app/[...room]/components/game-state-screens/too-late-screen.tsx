@@ -19,7 +19,7 @@ export function TooLate({ avatars }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-8 items-center">
+    <div className="flex flex-col items-center gap-8">
       <div>
         <h2 className="text-center">Too late!</h2>
         <span className="text-center">This game has already started</span>

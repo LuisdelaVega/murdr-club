@@ -12,7 +12,7 @@ interface Props {
 
 export function LobbyScreen({ avatars, socket, isPartyLeader = false }: Props) {
   return (
-    <div className="flex flex-col gap-10 items-center">
+    <div className="flex flex-col items-center gap-8">
       {isPartyLeader && (
         <Button
           disabled={avatars.length <= 1}
