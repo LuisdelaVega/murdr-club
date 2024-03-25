@@ -54,7 +54,7 @@ export function GameScreen({ player, socket }: Props) {
       )}
 
       {/* Secrets Drawer */}
-      <SecretsDrawer player={player} socket={socket} />
+      {!player.killedBy && <SecretsDrawer player={player} socket={socket} />}
 
       {/* Victims Section */}
       {player.victims.length > 0 && (

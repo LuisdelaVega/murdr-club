@@ -27,10 +27,6 @@ export function SecretsDrawer({ player, socket }: Props) {
     setOpenDialog(false);
   }, [player]);
 
-  if (player.killedBy) {
-    return null;
-  }
-
   return (
     <>
       <Drawer>

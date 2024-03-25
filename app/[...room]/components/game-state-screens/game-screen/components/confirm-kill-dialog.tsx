@@ -47,7 +47,7 @@ export function ConfirmKillDialog({ player, socket, ...dialogProps }: Props) {
   });
 
   function onSubmit({ targetId }: z.infer<typeof formSchema>) {
-    if (targetId === player.target?.id || player.target?.id === player.id) {
+    if (targetId === player.target?.id) {
       form.clearErrors("targetId");
       form.reset({
         targetId: "",
@@ -64,10 +64,6 @@ export function ConfirmKillDialog({ player, socket, ...dialogProps }: Props) {
         message: "The ID you entered doesn't match your target's ID.",
       });
     }
-  }
-
-  if (player.killedBy) {
-    return null;
   }
 
   return (
