@@ -1,29 +1,32 @@
 import { PlayerAvatar } from "@/[...room]/components/player-avatar";
 import { Button } from "@/components/ui/button";
 import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import { Skull } from "lucide-react";
 import { useRef } from "react";
 import { SecretsDrawer } from ".";
 
 interface Props extends Pick<Parameters<typeof SecretsDrawer>[0], "player"> {
   setOpenDialog: (value: boolean) => void;
+  timeline: gsap.core.Timeline;
 }
 
-export function DrawerBody({ player, setOpenDialog }: Props) {
-  const container = useRef<HTMLDivElement>(null);
+export function DrawerBody({ player, setOpenDialog, timeline }: Props) {
   const playerAvatar = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      gsap.set(playerAvatar.current, { opacity: 0 });
-      gsap.to(playerAvatar.current, { opacity: 1, duration: 3 });
+      timeline.set(playerAvatar.current, { scale: 0 });
+      timeline.to(playerAvatar.current, {
+        scale: 1,
+        duration: 1,
+        ease: "bounce.out",
+      });
     },
-    { scope: container },
+    { dependencies: [player.target?.id] },
   );
 
   return (
-    <div className="grid grid-cols-2 grid-rows-1" ref={container}>
+    <div className="grid grid-cols-2 grid-rows-1">
       <div className="flex flex-col gap-2 items-center">
         <h3>Target</h3>
         <PlayerAvatar avatar={player.target!} displayName ref={playerAvatar} />

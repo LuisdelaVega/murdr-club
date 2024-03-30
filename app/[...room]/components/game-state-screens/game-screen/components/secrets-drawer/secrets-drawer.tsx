@@ -9,7 +9,9 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { usePartySocket } from "@/hooks/use-party-socket";
+import { useGSAP } from "@gsap/react";
 import type { Player } from "common/types";
+import gsap from "gsap";
 import { Fingerprint, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ConfirmKillDialog } from "../confirm-kill-dialog";
@@ -22,10 +24,22 @@ interface Props {
 export function SecretsDrawer({ player }: Props) {
   const socket = usePartySocket();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [timeline, setTimeline] = useState<gsap.core.Timeline>();
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      onComplete: () => {
+        tl.pause();
+      },
+    });
+
+    setTimeline(tl);
+  });
 
   useEffect(() => {
+    timeline?.play(0);
     setOpenDialog(false);
-  }, [player]);
+  }, [player.target?.id, timeline]);
 
   return (
     <>
@@ -44,7 +58,13 @@ export function SecretsDrawer({ player }: Props) {
               <ShieldAlert className="w-8 h-8" />
             </DrawerTitle>
           </DrawerHeader>
-          <DrawerBody player={player} setOpenDialog={setOpenDialog} />
+          {timeline && (
+            <DrawerBody
+              player={player}
+              setOpenDialog={setOpenDialog}
+              timeline={timeline}
+            />
+          )}
           <DrawerFooter>
             <Button asChild>
               <DrawerClose>Close</DrawerClose>
