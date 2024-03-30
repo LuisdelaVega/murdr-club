@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProviderWrapper } from "./components/providers/theme-provider-wrapper";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <main>{children}</main>
           <Toaster richColors closeButton />
         </ThemeProviderWrapper>
+        <Analytics />
       </body>
     </html>
   );
