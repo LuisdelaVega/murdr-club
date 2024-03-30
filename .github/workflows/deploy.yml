@@ -2,9 +2,9 @@ name: Deploy PartyKit
 
 on:
   push:
-    branches: ["master"]
-  pull_request:
-    branches: ["master"]
+    paths:
+      - "party/**"
+      - "package.json"
 
 jobs:
   deploy:
