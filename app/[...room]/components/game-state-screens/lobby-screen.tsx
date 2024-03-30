@@ -1,16 +1,17 @@
 import { Button } from "@/components/ui/button";
+import { usePartySocket } from "@/hooks/use-party-socket";
 import type { Avatar, StartGameMessage } from "common/types";
 import { Swords } from "lucide-react";
-import type PartySocket from "partysocket";
 import { PlayerAvatar } from "../player-avatar";
 
 interface Props {
   avatars: Avatar[];
-  socket: PartySocket;
   isPartyLeader?: boolean;
 }
 
-export function LobbyScreen({ avatars, socket, isPartyLeader = false }: Props) {
+export function LobbyScreen({ avatars, isPartyLeader = false }: Props) {
+  const socket = usePartySocket();
+
   return (
     <div className="flex flex-col items-center gap-8">
       {isPartyLeader && (

@@ -8,19 +8,19 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { usePartySocket } from "@/hooks/use-party-socket";
 import type { Player } from "common/types";
 import { Fingerprint, ShieldAlert } from "lucide-react";
-import type PartySocket from "partysocket";
 import { useEffect, useState } from "react";
 import { ConfirmKillDialog } from "../confirm-kill-dialog";
 import { DrawerBody } from "./drawer-body";
 
 interface Props {
   player: Player;
-  socket: PartySocket;
 }
 
-export function SecretsDrawer({ player, socket }: Props) {
+export function SecretsDrawer({ player }: Props) {
+  const socket = usePartySocket();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   useEffect(() => {

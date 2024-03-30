@@ -1,7 +1,6 @@
 import { ZOD_STRING, shortUniqueIdOptions } from "@/utils/constants";
 import type { Player } from "common/types";
 import { Eye, EyeOff } from "lucide-react";
-import type PartySocket from "partysocket";
 import { useState } from "react";
 import { z } from "zod";
 import { PlayerAvatar } from "../../player-avatar";
@@ -13,10 +12,9 @@ const formSchema = z.object({
 
 interface Props {
   player: Player;
-  socket: PartySocket;
 }
 
-export function GameScreen({ player, socket }: Props) {
+export function GameScreen({ player }: Props) {
   const [displayId, setDisplayId] = useState<boolean>(false);
 
   return (
@@ -54,7 +52,7 @@ export function GameScreen({ player, socket }: Props) {
       )}
 
       {/* Secrets Drawer */}
-      {!player.killedBy && <SecretsDrawer player={player} socket={socket} />}
+      {!player.killedBy && <SecretsDrawer player={player} />}
 
       {/* Victims Section */}
       {player.victims.length > 0 && (

@@ -9,8 +9,9 @@ import type {
   ServerMessage,
 } from "common/types";
 import { Loader, PartyPopper } from "lucide-react";
+import type PartySocket from "partysocket";
 import usePartySocket from "partysocket/react";
-import { useMemo, useReducer, useRef } from "react";
+import { createContext, useMemo, useReducer, useRef } from "react";
 import { toast } from "sonner";
 import { GameEndedScreen } from "./game-state-screens/game-ended-screen";
 import { GameScreen } from "./game-state-screens/game-screen";
@@ -56,6 +57,14 @@ interface Props {
   room: string;
   avatar: Avatar;
 }
+
+interface SocketContextProps {
+  socket: PartySocket | undefined;
+}
+
+export const SocketContext = createContext<SocketContextProps>({
+  socket: undefined,
+});
 
 export function GameManager({ room, avatar }: Props) {
   const displayWelcomeMessageRef = useRef<boolean>(true);
@@ -110,35 +119,26 @@ export function GameManager({ room, avatar }: Props) {
     );
   }
 
-  // Return the appropriate screen
-  switch (gameState) {
-    case "WaitingForPlayers":
-      if (myAvatar) {
-        return (
-          <LobbyScreen
-            avatars={avatars}
-            socket={socket}
-            isPartyLeader={myAvatar.isPartyLeader}
-          />
-        );
-      }
+  return (
+    <SocketContext.Provider value={{ socket }}>
+      {gameState === "WaitingForPlayers" && myAvatar && (
+        <LobbyScreen avatars={avatars} isPartyLeader={myAvatar.isPartyLeader} />
+      )}
 
-    case "GameStarted":
-      if (myPlayer) {
-        return <GameScreen player={myPlayer} socket={socket} />;
-      }
+      {gameState === "GameStarted" && myPlayer && (
+        <GameScreen player={myPlayer} />
+      )}
 
-    case "GameEnded":
-      if (allPlayers) {
-        return <GameEndedScreen players={allPlayers} />;
-      }
+      {gameState === "GameEnded" && allPlayers && (
+        <GameEndedScreen players={allPlayers} />
+      )}
 
-    default:
-      return (
+      {!gameState && (
         <div className="flex flex-col justify-center align-middle items-center gap-4">
           <Loader className="animate-spin h-8 w-8" />
           <span>Loading...</span>
         </div>
-      );
-  }
+      )}
+    </SocketContext.Provider>
+  );
 }
